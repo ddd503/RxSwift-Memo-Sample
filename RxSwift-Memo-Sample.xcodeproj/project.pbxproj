@@ -14,7 +14,18 @@
 		459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45B23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld */; };
 		459AA45F23551FC400C8BD2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 459AA45E23551FC400C8BD2E /* Assets.xcassets */; };
 		459AA46223551FC400C8BD2E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 459AA46023551FC400C8BD2E /* LaunchScreen.storyboard */; };
+		459AA4702355321200C8BD2E /* RxSwift_Memo_SampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA46F2355321200C8BD2E /* RxSwift_Memo_SampleTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		459AA4722355321200C8BD2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 459AA44723551FC000C8BD2E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 459AA44E23551FC000C8BD2E;
+			remoteInfo = "RxSwift-Memo-Sample";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		459AA44F23551FC000C8BD2E /* RxSwift-Memo-Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RxSwift-Memo-Sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -26,10 +37,20 @@
 		459AA45E23551FC400C8BD2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		459AA46123551FC400C8BD2E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		459AA46323551FC400C8BD2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		459AA46D2355321200C8BD2E /* RxSwift-Memo-SampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RxSwift-Memo-SampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		459AA46F2355321200C8BD2E /* RxSwift_Memo_SampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxSwift_Memo_SampleTests.swift; sourceTree = "<group>"; };
+		459AA4712355321200C8BD2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		459AA44C23551FC000C8BD2E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		459AA46A2355321200C8BD2E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -43,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				459AA45123551FC000C8BD2E /* RxSwift-Memo-Sample */,
+				459AA46E2355321200C8BD2E /* RxSwift-Memo-SampleTests */,
 				459AA45023551FC000C8BD2E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -51,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				459AA44F23551FC000C8BD2E /* RxSwift-Memo-Sample.app */,
+				459AA46D2355321200C8BD2E /* RxSwift-Memo-SampleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,6 +91,15 @@
 				459AA45B23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld */,
 			);
 			path = "RxSwift-Memo-Sample";
+			sourceTree = "<group>";
+		};
+		459AA46E2355321200C8BD2E /* RxSwift-Memo-SampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				459AA46F2355321200C8BD2E /* RxSwift_Memo_SampleTests.swift */,
+				459AA4712355321200C8BD2E /* Info.plist */,
+			);
+			path = "RxSwift-Memo-SampleTests";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,6 +122,24 @@
 			productReference = 459AA44F23551FC000C8BD2E /* RxSwift-Memo-Sample.app */;
 			productType = "com.apple.product-type.application";
 		};
+		459AA46C2355321200C8BD2E /* RxSwift-Memo-SampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 459AA4742355321200C8BD2E /* Build configuration list for PBXNativeTarget "RxSwift-Memo-SampleTests" */;
+			buildPhases = (
+				459AA4692355321200C8BD2E /* Sources */,
+				459AA46A2355321200C8BD2E /* Frameworks */,
+				459AA46B2355321200C8BD2E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				459AA4732355321200C8BD2E /* PBXTargetDependency */,
+			);
+			name = "RxSwift-Memo-SampleTests";
+			productName = "RxSwift-Memo-SampleTests";
+			productReference = 459AA46D2355321200C8BD2E /* RxSwift-Memo-SampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -102,6 +152,10 @@
 				TargetAttributes = {
 					459AA44E23551FC000C8BD2E = {
 						CreatedOnToolsVersion = 11.1;
+					};
+					459AA46C2355321200C8BD2E = {
+						CreatedOnToolsVersion = 11.1;
+						TestTargetID = 459AA44E23551FC000C8BD2E;
 					};
 				};
 			};
@@ -119,6 +173,7 @@
 			projectRoot = "";
 			targets = (
 				459AA44E23551FC000C8BD2E /* RxSwift-Memo-Sample */,
+				459AA46C2355321200C8BD2E /* RxSwift-Memo-SampleTests */,
 			);
 		};
 /* End PBXProject section */
@@ -131,6 +186,13 @@
 				459AA46223551FC400C8BD2E /* LaunchScreen.storyboard in Resources */,
 				459AA45F23551FC400C8BD2E /* Assets.xcassets in Resources */,
 				459AA45A23551FC000C8BD2E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		459AA46B2355321200C8BD2E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,7 +210,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		459AA4692355321200C8BD2E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				459AA4702355321200C8BD2E /* RxSwift_Memo_SampleTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		459AA4732355321200C8BD2E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 459AA44E23551FC000C8BD2E /* RxSwift-Memo-Sample */;
+			targetProxy = 459AA4722355321200C8BD2E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		459AA45823551FC000C8BD2E /* Main.storyboard */ = {
@@ -320,6 +398,46 @@
 			};
 			name = Release;
 		};
+		459AA4752355321200C8BD2E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVR5UQEHBD;
+				INFOPLIST_FILE = "RxSwift-Memo-SampleTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kawahara.RxSwift-Memo-SampleTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RxSwift-Memo-Sample.app/RxSwift-Memo-Sample";
+			};
+			name = Debug;
+		};
+		459AA4762355321200C8BD2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVR5UQEHBD;
+				INFOPLIST_FILE = "RxSwift-Memo-SampleTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kawahara.RxSwift-Memo-SampleTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RxSwift-Memo-Sample.app/RxSwift-Memo-Sample";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -337,6 +455,15 @@
 			buildConfigurations = (
 				459AA46723551FC400C8BD2E /* Debug */,
 				459AA46823551FC400C8BD2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		459AA4742355321200C8BD2E /* Build configuration list for PBXNativeTarget "RxSwift-Memo-SampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				459AA4752355321200C8BD2E /* Debug */,
+				459AA4762355321200C8BD2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
