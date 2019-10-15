@@ -1,6 +1,0 @@
-framework module Pods_RxSwift_Memo_Sample {
-  umbrella header "Pods-RxSwift-Memo-Sample-umbrella.h"
-
-  export *
-  module * { export * }
-}
