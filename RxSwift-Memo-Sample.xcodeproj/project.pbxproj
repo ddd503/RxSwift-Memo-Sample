@@ -24,6 +24,7 @@
 		459AA48D23567F6800C8BD2E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 459AA48C23567F6800C8BD2E /* Default-568h@2x.png */; };
 		459AA48F2356806400C8BD2E /* MemoListViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */; };
 		459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4902356807900C8BD2E /* MemoListViewController.swift */; };
+		459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		459AA48C23567F6800C8BD2E /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MemoListViewController.storyboard; sourceTree = "<group>"; };
 		459AA4902356807900C8BD2E /* MemoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoListViewController.swift; sourceTree = "<group>"; };
+		459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoListViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +161,7 @@
 		459AA48923567D9400C8BD2E /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 				459AA48723567D6E00C8BD2E /* Memo+CoreDataProperties.swift in Sources */,
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
+				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
 				459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
