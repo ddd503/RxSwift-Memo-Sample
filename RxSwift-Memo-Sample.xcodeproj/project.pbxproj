@@ -25,6 +25,7 @@
 		459AA48F2356806400C8BD2E /* MemoListViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */; };
 		459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4902356807900C8BD2E /* MemoListViewController.swift */; };
 		459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */; };
+		459AA4972358CFF600C8BD2E /* MemoDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4962358CFF600C8BD2E /* MemoDataStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MemoListViewController.storyboard; sourceTree = "<group>"; };
 		459AA4902356807900C8BD2E /* MemoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoListViewController.swift; sourceTree = "<group>"; };
 		459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoListViewModel.swift; sourceTree = "<group>"; };
+		459AA4962358CFF600C8BD2E /* MemoDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,11 +180,28 @@
 		459AA48B23567D9A00C8BD2E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				459AA4952358CFB600C8BD2E /* DataStore */,
+				459AA4942358CFB400C8BD2E /* Entity */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		459AA4942358CFB400C8BD2E /* Entity */ = {
+			isa = PBXGroup;
+			children = (
 				459AA45B23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld */,
 				459AA48423567D6E00C8BD2E /* Memo+CoreDataClass.swift */,
 				459AA48523567D6E00C8BD2E /* Memo+CoreDataProperties.swift */,
 			);
-			path = Model;
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		459AA4952358CFB600C8BD2E /* DataStore */ = {
+			isa = PBXGroup;
+			children = (
+				459AA4962358CFF600C8BD2E /* MemoDataStore.swift */,
+			);
+			path = DataStore;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -335,6 +354,7 @@
 				459AA48623567D6E00C8BD2E /* Memo+CoreDataClass.swift in Sources */,
 				459AA45323551FC000C8BD2E /* AppDelegate.swift in Sources */,
 				459AA48723567D6E00C8BD2E /* Memo+CoreDataProperties.swift in Sources */,
+				459AA4972358CFF600C8BD2E /* MemoDataStore.swift in Sources */,
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
 				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
