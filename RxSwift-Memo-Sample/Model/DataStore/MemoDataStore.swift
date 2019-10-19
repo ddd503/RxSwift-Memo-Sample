@@ -20,6 +20,7 @@ protocol MemoDataStore {
 }
 
 enum MemoDataStoreError: Error {
+    case isNil
     case empty
 }
 
@@ -66,7 +67,7 @@ struct MemoDataStoreImpl: MemoDataStore {
     }
 
     /// エラーをthrowする版
-    private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false) throws -> [Memo] {
+    private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false, shouldErrorEmpty: Bool = true) throws -> [Memo] {
         let context = viewContext()
         let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
@@ -79,10 +80,19 @@ struct MemoDataStoreImpl: MemoDataStore {
                                                            cacheName: nil)
         do {
             try resultsController.performFetch()
-            guard let objects = resultsController.fetchedObjects, !objects.isEmpty else {
-                throw MemoDataStoreError.empty
+            if let objects = resultsController.fetchedObjects {
+                // 0件をエラーとするかどうか
+                if shouldErrorEmpty {
+                    guard !objects.isEmpty else {
+                        throw MemoDataStoreError.empty
+                    }
+                    return objects
+                } else {
+                    return objects
+                }
+            } else {
+                throw MemoDataStoreError.isNil
             }
-            return objects
         } catch let error as NSError {
             throw error
         }
@@ -112,12 +122,8 @@ struct MemoDataStoreImpl: MemoDataStore {
     }
 
     func countAll() -> Int? {
-        let context = viewContext()
-        let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
-        let resultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
-        try? resultController.performFetch()
-        guard let objects = resultController.fetchedObjects else { return nil }
-        return objects.count
+        guard let memos = try? fetchMemo(predicates: [], sortKey: "editDate", shouldErrorEmpty: false) else { return nil }
+        return memos.count
     }
 
     func viewContext() -> NSManagedObjectContext {
