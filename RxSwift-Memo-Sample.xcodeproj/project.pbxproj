@@ -27,6 +27,7 @@
 		459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */; };
 		459AA4972358CFF600C8BD2E /* MemoDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4962358CFF600C8BD2E /* MemoDataStore.swift */; };
 		459AA49A235AB04900C8BD2E /* MemoDataStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */; };
+		459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 		459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoListViewModel.swift; sourceTree = "<group>"; };
 		459AA4962358CFF600C8BD2E /* MemoDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStore.swift; sourceTree = "<group>"; };
 		459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStoreTest.swift; sourceTree = "<group>"; };
+		459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataPropaties.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				459AA4962358CFF600C8BD2E /* MemoDataStore.swift */,
+				459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */,
 			);
 			path = DataStore;
 			sourceTree = "<group>";
@@ -369,6 +372,7 @@
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
 				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
+				459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */,
 				459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

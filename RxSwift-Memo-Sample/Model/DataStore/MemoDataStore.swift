@@ -16,7 +16,6 @@ protocol MemoDataStore {
     func deleteAll()
     func deleteMemo(uniqueId: String)
     func countAll() -> Int?
-    func viewContext() -> NSManagedObjectContext
 }
 
 enum MemoDataStoreError: Error {
@@ -26,7 +25,7 @@ enum MemoDataStoreError: Error {
 
 struct MemoDataStoreImpl: MemoDataStore {
     func createMemo() -> Memo? {
-        let context = viewContext()
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
         guard let entity = NSEntityDescription.entity(forEntityName: "Memo", in: context), let allMemoCount = countAll() else { return nil }
         let memo = Memo(entity: entity, insertInto: context)
         memo.uniqueId = "\(allMemoCount + 1)"
@@ -44,7 +43,7 @@ struct MemoDataStoreImpl: MemoDataStore {
 
     /// クロージャで返す版
     private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false, completion: (Result<[Memo], Error>) -> ()) {
-        let context = viewContext()
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -68,7 +67,7 @@ struct MemoDataStoreImpl: MemoDataStore {
 
     /// エラーをthrowする版
     private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false, shouldErrorEmpty: Bool = true) throws -> [Memo] {
-        let context = viewContext()
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -104,7 +103,7 @@ struct MemoDataStoreImpl: MemoDataStore {
     }
 
     func deleteAll() {
-        let context = viewContext()
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Memo")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do {
@@ -115,7 +114,7 @@ struct MemoDataStoreImpl: MemoDataStore {
     }
 
     func deleteMemo(uniqueId: String) {
-        let context = viewContext()
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
         guard let targetMemo = try? readMemo(uniqueId: uniqueId) else { return }
         context.delete(targetMemo)
         saveContext(context)
@@ -126,17 +125,7 @@ struct MemoDataStoreImpl: MemoDataStore {
         return memos.count
     }
 
-    func viewContext() -> NSManagedObjectContext {
-        let container = NSPersistentContainer(name: "RxSwift_Memo_Sample")
-               container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-                   if let error = error as NSError? {
-                       fatalError("Unresolved error \(error), \(error.userInfo)")
-                   }
-               })
-        return container.viewContext
-    }
-
-    private func saveContext (_ context: NSManagedObjectContext) {
+    func saveContext (_ context: NSManagedObjectContext) {
         if context.hasChanges {
             do {
                 try context.save()
