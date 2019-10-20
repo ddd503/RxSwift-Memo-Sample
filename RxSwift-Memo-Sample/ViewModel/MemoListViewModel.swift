@@ -10,6 +10,10 @@ import RxSwift
 
 final class MemoListViewModel {
 
+    // Propaty
+//    private var isEditing: Observable<Bool>
+//    private var memos: Observable<[Memo]>
+
     // Output
     // View側から単方向バインディングされるプロパティ（ViewModelはViewを保持しない、知らない）
     // 例: let validationText: Observable<String>
@@ -17,5 +21,5 @@ final class MemoListViewModel {
 
     // Input
     // initで監視対象のプロパティと使用するモデルを受け取る
-    init() {}
+//    init() {}
 }
