@@ -9,9 +9,14 @@
 import UIKit
 import RxSwift
 
-final class MemoListViewController: UIViewController {
+class MemoListViewController: UIViewController {
 
-    private lazy var viewModel = MemoListViewModel()
+    @IBOutlet weak private var editButton: UIBarButtonItem!
+    @IBOutlet weak private var tableView: UITableView!
+    @IBOutlet weak private var addButton: UIButton!
+    @IBOutlet weak private var countLabel: UILabel!
+
+    private var viewModel: MemoListViewModel!
     private var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
@@ -20,6 +25,6 @@ final class MemoListViewController: UIViewController {
     }
 
     private func bind() {
-        // ViewModel側のObservableプロパティとデータバインディングする(主に描画処理に関するoutput)
+
     }
 }

@@ -6,20 +6,9 @@
 //  Copyright © 2019 kawaharadai. All rights reserved.
 //
 
+import RxCocoa
 import RxSwift
 
-final class MemoListViewModel {
+class MemoListViewModel {
 
-    // Propaty
-//    private var isEditing: Observable<Bool>
-//    private var memos: Observable<[Memo]>
-
-    // Output
-    // View側から単方向バインディングされるプロパティ（ViewModelはViewを保持しない、知らない）
-    // 例: let validationText: Observable<String>
-
-
-    // Input
-    // initで監視対象のプロパティと使用するモデルを受け取る
-//    init() {}
 }

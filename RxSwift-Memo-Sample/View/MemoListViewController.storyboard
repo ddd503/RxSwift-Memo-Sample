@@ -65,6 +65,12 @@
                     <navigationItem key="navigationItem" title="メモ" id="8QY-Tm-cBg">
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="ZzW-gw-jOS"/>
                     </navigationItem>
+                    <connections>
+                        <outlet property="addButton" destination="tIO-U4-1JG" id="P7F-5C-5j7"/>
+                        <outlet property="countLabel" destination="AXN-6T-2rJ" id="pwB-AR-TRy"/>
+                        <outlet property="editButton" destination="ZzW-gw-jOS" id="YYV-BP-0Ih"/>
+                        <outlet property="tableView" destination="wTd-bN-sMQ" id="Akd-QO-w9t"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eqN-VJ-AUV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
