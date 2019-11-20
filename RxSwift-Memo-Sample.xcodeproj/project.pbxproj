@@ -28,6 +28,8 @@
 		459AA4972358CFF600C8BD2E /* MemoDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA4962358CFF600C8BD2E /* MemoDataStore.swift */; };
 		459AA49A235AB04900C8BD2E /* MemoDataStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */; };
 		459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */; };
+		45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203A22384523B00B42831 /* MemoInfoCell.swift */; };
+		45F203A52384523B00B42831 /* MemoInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203A32384523B00B42831 /* MemoInfoCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +81,8 @@
 		459AA4962358CFF600C8BD2E /* MemoDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStore.swift; sourceTree = "<group>"; };
 		459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStoreTest.swift; sourceTree = "<group>"; };
 		459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataPropaties.swift; sourceTree = "<group>"; };
+		45F203A22384523B00B42831 /* MemoInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoInfoCell.swift; sourceTree = "<group>"; };
+		45F203A32384523B00B42831 /* MemoInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoInfoCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +182,8 @@
 			children = (
 				459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */,
 				459AA4902356807900C8BD2E /* MemoListViewController.swift */,
+				45F203A22384523B00B42831 /* MemoInfoCell.swift */,
+				45F203A32384523B00B42831 /* MemoInfoCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -304,6 +310,7 @@
 			files = (
 				459AA46223551FC400C8BD2E /* LaunchScreen.storyboard in Resources */,
 				459AA48D23567F6800C8BD2E /* Default-568h@2x.png in Resources */,
+				45F203A52384523B00B42831 /* MemoInfoCell.xib in Resources */,
 				459AA45F23551FC400C8BD2E /* Assets.xcassets in Resources */,
 				459AA48F2356806400C8BD2E /* MemoListViewController.storyboard in Resources */,
 			);
@@ -370,6 +377,7 @@
 				459AA48723567D6E00C8BD2E /* Memo+CoreDataProperties.swift in Sources */,
 				459AA4972358CFF600C8BD2E /* MemoDataStore.swift in Sources */,
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
+				45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
 				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
 				459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */,
