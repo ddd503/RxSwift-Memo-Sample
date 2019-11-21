@@ -12,7 +12,6 @@ import RxCocoa
 
 class MemoListViewController: UIViewController, UITableViewDelegate {
 
-    @IBOutlet weak private var editButton: UIBarButtonItem!
     @IBOutlet weak private var addButton: UIButton!
     @IBOutlet weak private var countLabel: UILabel!
     @IBOutlet weak private var tableView: UITableView! {
@@ -28,9 +27,14 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = MemoListViewModel(isEditing: isEditingObservable,
-                                      tapAddButton: addButton.rx.tap.asSignal())
+        navigationItem.rightBarButtonItem = editButtonItem
+        viewModel = MemoListViewModel()
         bind()
+    }
+
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        updateDisplay(at: editing)
     }
 
     private func bind() {
@@ -45,35 +49,37 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         viewModel.countLabelText
             .drive(countLabel.rx.text)
             .disposed(by: disposeBag)
-        tableView.rx.modelSelected(Memo.self).subscribe(onNext: { memo in
-            // TODO: メモ詳細をDIで作成 → 画面遷移
-        })
-            .disposed(by: disposeBag)
 
-        viewModel.showDeleteActionSheet
-            .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { _ in
-                print("アクションシート表示")
+        tableView.rx
+            .modelSelected(Memo.self)
+            .subscribe(onNext: { [weak self] memoInfo in
+                self?.transitionDetailMemoVC(memoInfo: memoInfo)
             })
             .disposed(by: disposeBag)
 
-        viewModel.transitionAddMemoVC
-        .observeOn(MainScheduler.asyncInstance)
-        .subscribe(onNext: { _ in
-            print("メモ追加画面へ遷移")
-        })
+        addButton.rx
+            .tap
+            .subscribe { [weak self] (_) in
+                if let self = self {
+                    self.tableView.isEditing ? self.showAllDeleteActionSheet() : self.transitionDetailMemoVC(memoInfo: nil)
+                }
+        }
         .disposed(by: disposeBag)
     }
 
-    override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated)
-        tableView.isEditing = editing
+    // Private
+
+    private func updateDisplay(at isEditing: Bool) {
+        tableView.isEditing = isEditing
+        addButton.setTitle(isEditing ? "全て削除" : "メモ追加", for: .normal)
     }
 
-}
-
-extension UIViewController {
-    var isEditingObservable: Observable<Bool> {
-        return Observable.of(self.isEditing)
+    private func transitionDetailMemoVC(memoInfo: Memo?) {
+        print("メモ作成画面へ遷移")
     }
+
+    private func showAllDeleteActionSheet() {
+        print("削除アクションシートを表示")
+    }
+
 }
