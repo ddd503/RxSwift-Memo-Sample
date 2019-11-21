@@ -11,7 +11,7 @@ import CoreData
 protocol MemoDataStore {
     func createMemo() -> Memo?
     func readAll(_ completion: (Result<[Memo], Error>) -> ())
-     func readMemo(uniqueId: String) throws -> Memo
+    func readMemo(uniqueId: String) throws -> Memo
     func updateMemo(memo: Memo)
     func deleteAll()
     func deleteMemo(uniqueId: String)

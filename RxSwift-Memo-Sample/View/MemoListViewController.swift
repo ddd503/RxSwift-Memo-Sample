@@ -47,9 +47,22 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         tableView.rx.modelSelected(Memo.self).subscribe(onNext: { memo in
             // TODO: メモ詳細をDIで作成 → 画面遷移
-        }).disposed(by: disposeBag)
+        })
+            .disposed(by: disposeBag)
 
+        viewModel.showDeleteActionSheet
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onNext: { _ in
+                print("アクションシート表示")
+            })
+            .disposed(by: disposeBag)
 
+        viewModel.transitionAddMemoVC
+        .observeOn(MainScheduler.asyncInstance)
+        .subscribe(onNext: { _ in
+            print("メモ追加画面へ遷移")
+        })
+        .disposed(by: disposeBag)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
