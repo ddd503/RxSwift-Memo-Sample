@@ -10,10 +10,9 @@ import RxCocoa
 import RxSwift
 
 class MemoListViewModel {
+    let memoDataStore: MemoDataStoreNew
     var memos = BehaviorRelay<[Memo]>(value: [])
     let countLabelText: Driver<String>
-    let memoDataStore: MemoDataStoreNew
-
     let deleteAllMemo: Observable<Void>
 
     init(memoDataStore: MemoDataStoreNew) {

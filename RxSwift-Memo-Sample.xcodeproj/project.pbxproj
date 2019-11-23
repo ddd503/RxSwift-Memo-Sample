@@ -32,6 +32,9 @@
 		45F203A52384523B00B42831 /* MemoInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203A32384523B00B42831 /* MemoInfoCell.xib */; };
 		45F203AF23897FF300B42831 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203AE23897FF300B42831 /* UIViewController+Alert.swift */; };
 		45F203B12389ABB000B42831 /* MemoDataStoreNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203B02389ABB000B42831 /* MemoDataStoreNew.swift */; };
+		45F203B92389E66300B42831 /* MemoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203B72389E66300B42831 /* MemoDetailViewController.swift */; };
+		45F203BA2389E66300B42831 /* MemoDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203B82389E66300B42831 /* MemoDetailViewController.xib */; };
+		45F203BC2389E75000B42831 /* MemoDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +90,9 @@
 		45F203A32384523B00B42831 /* MemoInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoInfoCell.xib; sourceTree = "<group>"; };
 		45F203AE23897FF300B42831 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
 		45F203B02389ABB000B42831 /* MemoDataStoreNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStoreNew.swift; sourceTree = "<group>"; };
+		45F203B72389E66300B42831 /* MemoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewController.swift; sourceTree = "<group>"; };
+		45F203B82389E66300B42831 /* MemoDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoDetailViewController.xib; sourceTree = "<group>"; };
+		45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,10 +139,9 @@
 		459AA45123551FC000C8BD2E /* RxSwift-Memo-Sample */ = {
 			isa = PBXGroup;
 			children = (
-				45F203AD23897FC500B42831 /* Extensions */,
+				45F203B22389E31D00B42831 /* Presentation */,
 				459AA48B23567D9A00C8BD2E /* Model */,
-				459AA48A23567D9700C8BD2E /* View */,
-				459AA48923567D9400C8BD2E /* ViewModel */,
+				45F203AD23897FC500B42831 /* Extensions */,
 				459AA48823567D9100C8BD2E /* Other */,
 			);
 			path = "RxSwift-Memo-Sample";
@@ -238,6 +243,50 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		45F203B22389E31D00B42831 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				45F203B32389E36E00B42831 /* MemoList */,
+				45F203B42389E4B600B42831 /* MemoDetail */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		45F203B32389E36E00B42831 /* MemoList */ = {
+			isa = PBXGroup;
+			children = (
+				459AA48A23567D9700C8BD2E /* View */,
+				459AA48923567D9400C8BD2E /* ViewModel */,
+			);
+			path = MemoList;
+			sourceTree = "<group>";
+		};
+		45F203B42389E4B600B42831 /* MemoDetail */ = {
+			isa = PBXGroup;
+			children = (
+				45F203B62389E4C800B42831 /* View */,
+				45F203B52389E4C500B42831 /* ViewModel */,
+			);
+			path = MemoDetail;
+			sourceTree = "<group>";
+		};
+		45F203B52389E4C500B42831 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		45F203B62389E4C800B42831 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				45F203B72389E66300B42831 /* MemoDetailViewController.swift */,
+				45F203B82389E66300B42831 /* MemoDetailViewController.xib */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -327,6 +376,7 @@
 				45F203A52384523B00B42831 /* MemoInfoCell.xib in Resources */,
 				459AA45F23551FC400C8BD2E /* Assets.xcassets in Resources */,
 				459AA48F2356806400C8BD2E /* MemoListViewController.storyboard in Resources */,
+				45F203BA2389E66300B42831 /* MemoDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,10 +444,12 @@
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
 				45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
+				45F203B92389E66300B42831 /* MemoDetailViewController.swift in Sources */,
 				45F203B12389ABB000B42831 /* MemoDataStoreNew.swift in Sources */,
 				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
 				459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */,
 				459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */,
+				45F203BC2389E75000B42831 /* MemoDetailViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
