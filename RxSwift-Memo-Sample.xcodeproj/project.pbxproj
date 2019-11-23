@@ -30,6 +30,7 @@
 		459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */; };
 		45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203A22384523B00B42831 /* MemoInfoCell.swift */; };
 		45F203A52384523B00B42831 /* MemoInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203A32384523B00B42831 /* MemoInfoCell.xib */; };
+		45F203AF23897FF300B42831 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203AE23897FF300B42831 /* UIViewController+Alert.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 		459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataPropaties.swift; sourceTree = "<group>"; };
 		45F203A22384523B00B42831 /* MemoInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoInfoCell.swift; sourceTree = "<group>"; };
 		45F203A32384523B00B42831 /* MemoInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoInfoCell.xib; sourceTree = "<group>"; };
+		45F203AE23897FF300B42831 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 		459AA45123551FC000C8BD2E /* RxSwift-Memo-Sample */ = {
 			isa = PBXGroup;
 			children = (
+				45F203AD23897FC500B42831 /* Extensions */,
 				459AA48B23567D9A00C8BD2E /* Model */,
 				459AA48A23567D9700C8BD2E /* View */,
 				459AA48923567D9400C8BD2E /* ViewModel */,
@@ -222,6 +225,14 @@
 				459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		45F203AD23897FC500B42831 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				45F203AE23897FF300B42831 /* UIViewController+Alert.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -376,6 +387,7 @@
 				459AA45323551FC000C8BD2E /* AppDelegate.swift in Sources */,
 				459AA48723567D6E00C8BD2E /* Memo+CoreDataProperties.swift in Sources */,
 				459AA4972358CFF600C8BD2E /* MemoDataStore.swift in Sources */,
+				45F203AF23897FF300B42831 /* UIViewController+Alert.swift in Sources */,
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
 				45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,

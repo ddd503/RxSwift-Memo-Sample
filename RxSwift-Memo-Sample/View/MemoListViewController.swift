@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 
 class MemoListViewController: UIViewController, UITableViewDelegate {
+    let ddd = PublishRelay<Bool>()
 
     @IBOutlet weak private var addButton: UIButton!
     @IBOutlet weak private var countLabel: UILabel!
@@ -28,7 +29,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = editButtonItem
-        viewModel = MemoListViewModel()
+        viewModel = MemoListViewModel(memoDataStore: MemoDataStoreImpl())
         bind()
     }
 
@@ -79,7 +80,16 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     }
 
     private func showAllDeleteActionSheet() {
-        print("削除アクションシートを表示")
+        let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) {
+            print("すべて削除実行")
+        }
+        let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
+        // タスクの実行完了を購読したい場合はsubscribeする
+        showAlert(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
+            .subscribe(onNext: {
+                print("イベント実行完了、購読しないとアラートは出ない")
+            })
+            .disposed(by: disposeBag)
     }
 
 }
