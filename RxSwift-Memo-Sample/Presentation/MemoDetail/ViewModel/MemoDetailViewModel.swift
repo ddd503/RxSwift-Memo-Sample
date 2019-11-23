@@ -7,7 +7,11 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
 class MemoDetailViewModel {
+
+    init(memo: Memo?, tappedDone: Signal<()>) {}
     
 }

@@ -10,7 +10,12 @@ import UIKit
 
 class MemoDetailViewController: UIViewController {
 
-    init() {
+    @IBOutlet weak private var textView: UITextView!
+    private var doneButtonItem: UIBarButtonItem!
+    private let memo: Memo?
+
+    init(memo: Memo?) {
+        self.memo = memo
         super.init(nibName: String(describing: MemoDetailViewController.self), bundle: .main)
     }
 
@@ -20,7 +25,13 @@ class MemoDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        doneButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: nil)
+        navigationItem.rightBarButtonItem = doneButtonItem
+        textView.becomeFirstResponder()
 
+        // bind
+
+        let viewModel = MemoDetailViewModel(memo: memo, tappedDone: doneButtonItem.rx.tap.asSignal())
     }
 
 }

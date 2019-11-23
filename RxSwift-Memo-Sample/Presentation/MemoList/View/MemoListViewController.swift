@@ -21,23 +21,16 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             tableView.tableFooterView = UIView()
         }
     }
-
-    private var viewModel: MemoListViewModel!
     private var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = editButtonItem
-        viewModel = MemoListViewModel(memoDataStore: MemoDataStoreNewImpl())
-        bind()
-    }
 
-    override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated)
-        updateDisplay(at: editing)
-    }
+        // bind
 
-    private func bind() {
+        let viewModel = MemoListViewModel(memoDataStore: MemoDataStoreNewImpl())
+
         viewModel.memos
             .asObservable()
             .bind(to: tableView.rx.items(cellIdentifier: MemoInfoCell.identifier,
@@ -52,8 +45,8 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
 
         tableView.rx
             .modelSelected(Memo.self)
-            .subscribe(onNext: { [weak self] memoInfo in
-                self?.transitionDetailMemoVC(memoInfo: memoInfo)
+            .subscribe(onNext: { [weak self] memo in
+                self?.transitionDetailMemoVC(memo: memo)
             })
             .disposed(by: disposeBag)
 
@@ -61,27 +54,31 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             .tap
             .subscribe { [weak self] (_) in
                 if let self = self {
-                    self.tableView.isEditing ? self.showAllDeleteActionSheet() : self.transitionDetailMemoVC(memoInfo: nil)
+                    self.tableView.isEditing ? self.showAllDeleteActionSheet(viewModel: viewModel) : self.transitionDetailMemoVC(memo: nil)
                 }
         }
         .disposed(by: disposeBag)
     }
 
-    // Private
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        updateDisplay(at: editing)
+    }
 
     private func updateDisplay(at isEditing: Bool) {
         tableView.isEditing = isEditing
         addButton.setTitle(isEditing ? "全て削除" : "メモ追加", for: .normal)
     }
 
-    private func transitionDetailMemoVC(memoInfo: Memo?) {
-        print("メモ作成画面へ遷移")
+    private func transitionDetailMemoVC(memo: Memo?) {
+        let memoDetailVC = MemoDetailViewController(memo: memo)
+        navigationController?.pushViewController(memoDetailVC, animated: true)
     }
 
-    private func showAllDeleteActionSheet() {
+    private func showAllDeleteActionSheet(viewModel: MemoListViewModel) {
         let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) { [weak self] in
             guard let self = self else { return }
-            self.viewModel.deleteAllMemo
+            viewModel.deleteAllMemo
                 .catchError({ (error) -> Observable<()> in
                     print(error.localizedDescription)
                     return Observable.empty() // エラーがあっても完了まで流す
@@ -91,13 +88,13 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                 })
                 .disposed(by: self.disposeBag)
         }
-
+        
         let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
         showAlertView(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
     }
 
     private func showAlertView(title: String? = nil, message: String? = nil,
-                           style: UIAlertController.Style, actions: [ObservableAlertAction]) {
+                               style: UIAlertController.Style, actions: [ObservableAlertAction]) {
         showAlert(title: nil, message: nil, style: style, actions: actions)
             .subscribe(onNext: { action in
                 action.task?()
