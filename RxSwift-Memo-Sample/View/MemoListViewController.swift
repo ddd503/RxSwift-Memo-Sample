@@ -61,11 +61,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             .tap
             .subscribe { [weak self] (_) in
                 if let self = self {
-                    if self.tableView.isEditing {
-                        self.showAllDeleteActionSheet()
-                    } else {
-                        self.transitionDetailMemoVC(memoInfo: nil)
-                    }
+                    self.tableView.isEditing ? self.showAllDeleteActionSheet() : self.transitionDetailMemoVC(memoInfo: nil)
                 }
         }
         .disposed(by: disposeBag)
@@ -97,7 +93,12 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         }
 
         let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
-        showAlert(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
+        showAlertView(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
+    }
+
+    private func showAlertView(title: String? = nil, message: String? = nil,
+                           style: UIAlertController.Style, actions: [ObservableAlertAction]) {
+        showAlert(title: nil, message: nil, style: style, actions: actions)
             .subscribe(onNext: { action in
                 action.task?()
             })
