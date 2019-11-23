@@ -84,11 +84,8 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             print("すべて削除実行")
         }
         let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
-        // タスクの実行完了を購読したい場合はsubscribeする
         showAlert(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
-            .subscribe(onNext: {
-                print("イベント実行完了、購読しないとアラートは出ない")
-            })
+            .subscribe()
             .disposed(by: disposeBag)
     }
 
