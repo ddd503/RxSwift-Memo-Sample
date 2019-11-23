@@ -11,7 +11,6 @@ import RxSwift
 import RxCocoa
 
 class MemoListViewController: UIViewController, UITableViewDelegate {
-    let ddd = PublishRelay<Bool>()
 
     @IBOutlet weak private var addButton: UIButton!
     @IBOutlet weak private var countLabel: UILabel!
@@ -29,7 +28,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = editButtonItem
-        viewModel = MemoListViewModel(memoDataStore: MemoDataStoreImpl())
+        viewModel = MemoListViewModel(memoDataStore: MemoDataStoreNewImpl())
         bind()
     }
 
@@ -62,7 +61,11 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             .tap
             .subscribe { [weak self] (_) in
                 if let self = self {
-                    self.tableView.isEditing ? self.showAllDeleteActionSheet() : self.transitionDetailMemoVC(memoInfo: nil)
+                    if self.tableView.isEditing {
+                        self.showAllDeleteActionSheet()
+                    } else {
+                        self.transitionDetailMemoVC(memoInfo: nil)
+                    }
                 }
         }
         .disposed(by: disposeBag)
@@ -80,12 +83,24 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     }
 
     private func showAllDeleteActionSheet() {
-        let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) {
-            print("すべて削除実行")
+        let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) { [weak self] in
+            guard let self = self else { return }
+            self.viewModel.deleteAllMemo
+                .catchError({ (error) -> Observable<()> in
+                    print(error.localizedDescription)
+                    return Observable.empty() // エラーがあっても完了まで流す
+                })
+                .subscribe(onCompleted: {
+                    self.setEditing(false, animated: true)
+                })
+                .disposed(by: self.disposeBag)
         }
+
         let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
         showAlert(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
-            .subscribe()
+            .subscribe(onNext: { action in
+                action.task?()
+            })
             .disposed(by: disposeBag)
     }
 

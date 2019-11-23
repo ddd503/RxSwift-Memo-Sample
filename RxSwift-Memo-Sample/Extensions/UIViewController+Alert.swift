@@ -24,16 +24,14 @@ struct ObservableAlertAction {
 }
 
 extension UIViewController {
-    @discardableResult
     func showAlert(title: String? = nil, message: String? = nil,
-                   style: UIAlertController.Style, actions: [ObservableAlertAction]) -> Observable<Void> {
+                   style: UIAlertController.Style, actions: [ObservableAlertAction]) -> Observable<ObservableAlertAction> {
         return Observable.create { (observer) -> Disposable in
             let alert = UIAlertController(title: title, message: message, preferredStyle: style)
             actions.forEach { (action) in
                 // 購読用のアクションに詰め直し
                 let observerAction = UIAlertAction(title: action.title, style: action.style) { (_) in
-                    action.task?() // タスク実行
-                    observer.onNext(()) // Actionの発火を通知する
+                    observer.onNext(action) // タップに紐付いたObservableAlertActionをストリームに流す
                     observer.onCompleted()
                 }
                 alert.addAction(observerAction)

@@ -12,9 +12,11 @@ import RxSwift
 class MemoListViewModel {
     var memos = BehaviorRelay<[Memo]>(value: [])
     let countLabelText: Driver<String>
-    let memoDataStore: MemoDataStore
+    let memoDataStore: MemoDataStoreNew
 
-    init(memoDataStore: MemoDataStore) {
+    let deleteAllMemo: Observable<Void>
+
+    init(memoDataStore: MemoDataStoreNew) {
         self.memoDataStore = memoDataStore
         countLabelText = memos.asObservable()
             .flatMap({ (memos) -> Observable<String> in
@@ -22,5 +24,7 @@ class MemoListViewModel {
                 return Observable.of(text)
             })
             .asDriver(onErrorJustReturn: "メモなし")
+
+        deleteAllMemo = memoDataStore.deleteAll()
     }
 }
