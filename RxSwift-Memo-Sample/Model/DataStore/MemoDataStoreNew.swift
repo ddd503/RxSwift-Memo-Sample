@@ -11,26 +11,32 @@ import RxSwift
 import RxCocoa
 
 protocol MemoDataStoreNew {
-    func createMemo() -> Observable<Memo>
+    func createMemo(text: String) -> Observable<Memo>
     func readAll() -> Observable<[Memo]>
     func readMemo(uniqueId: String) -> Observable<Memo>
-    func updateMemo(memo: Memo)
+    func updateMemo(memo: Memo, text: String)
     func deleteAll() -> Observable<Void>
     func deleteMemo(uniqueId: String) -> Observable<Void>
     func countAll() -> Observable<Int>
 }
 
 struct MemoDataStoreNewImpl: MemoDataStoreNew {
-    func createMemo() -> Observable<Memo> {
+    func createMemo(text: String) -> Observable<Memo> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: "Memo", in: context)
+        defer { saveContext(context) }
         return countAll()
             .flatMap { (memosCount) -> Observable<Memo> in
                 guard let entity = entity else {
                     return Observable.error(MemoDataStoreError.isNil)
                 }
                 let memo = Memo(entity: entity, insertInto: context)
-                memo.uniqueId = "\(memosCount + 1)"
+                context.performAndWait {
+                    memo.uniqueId = "\(memosCount + 1)"
+                    memo.title = text.firstLine
+                    memo.content = text.afterSecondLine
+                    memo.editDate = Date()
+                }
                 return Observable.of(memo)
         }
     }
@@ -71,8 +77,13 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
         .asObservable()
     }
 
-    func updateMemo(memo: Memo) {
+    func updateMemo(memo: Memo, text: String) {
         guard let context = memo.managedObjectContext else { return }
+        context.performAndWait {
+            memo.title = text.firstLine
+            memo.content = text.afterSecondLine
+            memo.editDate = Date()
+        }
         saveContext(context)
     }
 

@@ -35,6 +35,7 @@
 		45F203B92389E66300B42831 /* MemoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203B72389E66300B42831 /* MemoDetailViewController.swift */; };
 		45F203BA2389E66300B42831 /* MemoDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203B82389E66300B42831 /* MemoDetailViewController.xib */; };
 		45F203BC2389E75000B42831 /* MemoDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */; };
+		45F203BE238C8D8300B42831 /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BD238C8D8300B42831 /* String+.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		45F203B72389E66300B42831 /* MemoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewController.swift; sourceTree = "<group>"; };
 		45F203B82389E66300B42831 /* MemoDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoDetailViewController.xib; sourceTree = "<group>"; };
 		45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewModel.swift; sourceTree = "<group>"; };
+		45F203BD238C8D8300B42831 /* String+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				45F203AE23897FF300B42831 /* UIViewController+Alert.swift */,
+				45F203BD238C8D8300B42831 /* String+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -443,6 +446,7 @@
 				45F203AF23897FF300B42831 /* UIViewController+Alert.swift in Sources */,
 				459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */,
 				45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */,
+				45F203BE238C8D8300B42831 /* String+.swift in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
 				45F203B92389E66300B42831 /* MemoDetailViewController.swift in Sources */,
 				45F203B12389ABB000B42831 /* MemoDataStoreNew.swift in Sources */,

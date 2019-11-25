@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import RxSwift
 
 class MemoDetailViewController: UIViewController {
 
     @IBOutlet weak private var textView: UITextView!
     private var doneButtonItem: UIBarButtonItem!
     private let memo: Memo?
+    private var disposeBag = DisposeBag()
 
     init(memo: Memo?) {
         self.memo = memo
@@ -32,9 +34,16 @@ class MemoDetailViewController: UIViewController {
         // bind
 
         let viewModel = MemoDetailViewModel(memo: memo,
-                                            text: textView.rx.text.asObservable(),
+                                            textViewText: textView.rx.text.orEmpty.asDriver(),
                                             memoDataStore: MemoDataStoreNewImpl(),
                                             tappedDone: doneButtonItem.rx.tap.asSignal())
+
+        viewModel.completeSaveMemo
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] notification in
+                self?.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 
 }
