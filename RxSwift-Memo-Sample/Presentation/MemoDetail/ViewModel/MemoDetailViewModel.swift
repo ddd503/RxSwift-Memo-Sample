@@ -12,6 +12,12 @@ import RxCocoa
 
 class MemoDetailViewModel {
 
-    init(memo: Memo?, tappedDone: Signal<()>) {}
+    init(memo: Memo?, text: Observable<String?>, memoDataStore: MemoDataStoreNew, tappedDone: Signal<()>) {
+        // タップアクション、メモ作成 or メモ更新
+
+        // CoreData保存完了、画面閉じる
+
+        // キーボード表示ハンドリング、Viewとbind
+    }
     
 }

@@ -31,7 +31,10 @@ class MemoDetailViewController: UIViewController {
 
         // bind
 
-        let viewModel = MemoDetailViewModel(memo: memo, tappedDone: doneButtonItem.rx.tap.asSignal())
+        let viewModel = MemoDetailViewModel(memo: memo,
+                                            text: textView.rx.text.asObservable(),
+                                            memoDataStore: MemoDataStoreNewImpl(),
+                                            tappedDone: doneButtonItem.rx.tap.asSignal())
     }
 
 }

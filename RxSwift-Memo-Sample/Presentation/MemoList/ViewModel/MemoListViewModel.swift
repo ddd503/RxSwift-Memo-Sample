@@ -10,13 +10,11 @@ import RxCocoa
 import RxSwift
 
 class MemoListViewModel {
-    let memoDataStore: MemoDataStoreNew
     var memos = BehaviorRelay<[Memo]>(value: [])
     let countLabelText: Driver<String>
     let deleteAllMemo: Observable<Void>
 
     init(memoDataStore: MemoDataStoreNew) {
-        self.memoDataStore = memoDataStore
         countLabelText = memos.asObservable()
             .flatMap({ (memos) -> Observable<String> in
                 let text = memos.isEmpty ? "メモなし" : "\(memos.count)件のメモ"
