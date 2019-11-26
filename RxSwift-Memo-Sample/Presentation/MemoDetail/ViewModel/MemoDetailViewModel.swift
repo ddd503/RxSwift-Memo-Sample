@@ -9,26 +9,27 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import UIKit
 
 class MemoDetailViewModel {
 
+    let startSaveMemo: Driver<Memo>
     let completeSaveMemo: Observable<Notification>
 
     init(memo: Memo?, textViewText: Driver<String>, memoDataStore: MemoDataStoreNew, tappedDone: Signal<()>) {
-
         // タップアクション → メモ作成 or メモ更新
-        let _ = tappedDone.withLatestFrom(textViewText).map { (text) in
+        startSaveMemo = tappedDone.withLatestFrom(textViewText).flatMapLatest({ (text) -> Driver<Memo> in
             if let memo = memo {
-                memoDataStore.updateMemo(memo: memo, text: text)
+                return memoDataStore.updateMemo(memo: memo, text: text).asDriver(onErrorJustReturn: memo)
             } else {
-                let _ =  memoDataStore.createMemo(text: text)
+                let createMemo = memoDataStore.createMemo(text: text)
+                return createMemo.asDriver(onErrorJustReturn: Memo())
             }
-        }
+        })
 
-        // CoreData保存完了、画面閉じる
-        completeSaveMemo = NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)
-        
-        // キーボード表示ハンドリング、Viewとbind
+        // メモ保存完了
+        completeSaveMemo = NotificationCenter.default.rx
+            .notification(.NSManagedObjectContextDidSave)
     }
     
 }

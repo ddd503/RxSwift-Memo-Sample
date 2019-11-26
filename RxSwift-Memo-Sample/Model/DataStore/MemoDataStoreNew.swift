@@ -14,7 +14,7 @@ protocol MemoDataStoreNew {
     func createMemo(text: String) -> Observable<Memo>
     func readAll() -> Observable<[Memo]>
     func readMemo(uniqueId: String) -> Observable<Memo>
-    func updateMemo(memo: Memo, text: String)
+    func updateMemo(memo: Memo, text: String) -> Observable<Memo>
     func deleteAll() -> Observable<Void>
     func deleteMemo(uniqueId: String) -> Observable<Void>
     func countAll() -> Observable<Int>
@@ -37,7 +37,7 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
                     memo.content = text.afterSecondLine
                     memo.editDate = Date()
                 }
-                return Observable.of(memo)
+                return Observable.just(memo)
         }
     }
 
@@ -49,7 +49,7 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
         return fetchMemo(predicates: [NSPredicate(format: "uniqueId == %@", uniqueId)], sortKey: "editDate")
             .ifEmpty(switchTo: Observable.error(MemoDataStoreError.empty))
             .flatMap { (memos) -> Observable<Memo> in
-                return Observable.of(memos[0])
+                return Observable.just(memos[0])
         }
     }
 
@@ -77,14 +77,15 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
         .asObservable()
     }
 
-    func updateMemo(memo: Memo, text: String) {
-        guard let context = memo.managedObjectContext else { return }
+    func updateMemo(memo: Memo, text: String) -> Observable<Memo> {
+        guard let context = memo.managedObjectContext else { return Observable.never() }
+        defer { saveContext(context) }
         context.performAndWait {
             memo.title = text.firstLine
             memo.content = text.afterSecondLine
             memo.editDate = Date()
         }
-        saveContext(context)
+        return Observable.just(memo)
     }
 
     func deleteAll() -> Observable<Void> {
@@ -96,7 +97,7 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
             .flatMap { (request) -> Observable<Void> in
                 let result = try context.execute(request)
                 print("削除結果：\(result)")
-                return Observable.of(())
+                return Observable.just(())
         }
     }
 
@@ -115,7 +116,7 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
 
     func countAll() -> Observable<Int> {
         return fetchMemo(predicates: [], sortKey: "editDate").flatMap { (memos) -> Observable<Int> in
-            return Observable.of(memos.count)
+            return Observable.just(memos.count)
         }
     }
 

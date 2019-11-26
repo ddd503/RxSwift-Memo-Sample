@@ -38,6 +38,12 @@ class MemoDetailViewController: UIViewController {
                                             memoDataStore: MemoDataStoreNewImpl(),
                                             tappedDone: doneButtonItem.rx.tap.asSignal())
 
+        viewModel.startSaveMemo
+            .drive(onNext: { memo in
+                print("変更があったメモ: \(memo)")
+            })
+            .disposed(by: disposeBag)
+
         viewModel.completeSaveMemo
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] notification in
