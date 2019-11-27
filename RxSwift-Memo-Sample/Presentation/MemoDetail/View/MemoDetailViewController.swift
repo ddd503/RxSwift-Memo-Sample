@@ -47,7 +47,7 @@ class MemoDetailViewController: UIViewController {
         viewModel.completeSaveMemo
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] notification in
-                self?.dismiss(animated: true)
+                self?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
     }

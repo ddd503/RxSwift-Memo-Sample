@@ -24,7 +24,6 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
     func createMemo(text: String) -> Observable<Memo> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: "Memo", in: context)
-        defer { saveContext(context) }
         return countAll()
             .flatMap { (memosCount) -> Observable<Memo> in
                 guard let entity = entity else {
@@ -36,6 +35,7 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
                     memo.title = text.firstLine
                     memo.content = text.afterSecondLine
                     memo.editDate = Date()
+                    self.saveContext(context)
                 }
                 return Observable.just(memo)
         }
@@ -79,11 +79,11 @@ struct MemoDataStoreNewImpl: MemoDataStoreNew {
 
     func updateMemo(memo: Memo, text: String) -> Observable<Memo> {
         guard let context = memo.managedObjectContext else { return Observable.never() }
-        defer { saveContext(context) }
         context.performAndWait {
             memo.title = text.firstLine
             memo.content = text.afterSecondLine
             memo.editDate = Date()
+            self.saveContext(context)
         }
         return Observable.just(memo)
     }
