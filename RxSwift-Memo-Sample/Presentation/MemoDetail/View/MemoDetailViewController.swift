@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 class MemoDetailViewController: UIViewController {
 
@@ -49,6 +50,12 @@ class MemoDetailViewController: UIViewController {
             .subscribe(onNext: { [weak self] notification in
                 self?.navigationController?.popViewController(animated: true)
             })
+            .disposed(by: disposeBag)
+
+        textView.rx.text
+            .orEmpty
+            .asObservable()
+            .bind(to: doneButtonItem.rx.isEnableEmpty)
             .disposed(by: disposeBag)
     }
 

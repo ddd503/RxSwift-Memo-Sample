@@ -37,6 +37,7 @@
 		45F203BC2389E75000B42831 /* MemoDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */; };
 		45F203BE238C8D8300B42831 /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BD238C8D8300B42831 /* String+.swift */; };
 		45F203C0238D788500B42831 /* UIView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BF238D788500B42831 /* UIView+Layout.swift */; };
+		45F203C2238EA2BE00B42831 /* Reactive+Binder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203C1238EA2BE00B42831 /* Reactive+Binder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +98,7 @@
 		45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewModel.swift; sourceTree = "<group>"; };
 		45F203BD238C8D8300B42831 /* String+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+.swift"; sourceTree = "<group>"; };
 		45F203BF238D788500B42831 /* UIView+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Layout.swift"; sourceTree = "<group>"; };
+		45F203C1238EA2BE00B42831 /* Reactive+Binder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Reactive+Binder.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,6 +247,7 @@
 				45F203AE23897FF300B42831 /* UIViewController+Alert.swift */,
 				45F203BD238C8D8300B42831 /* String+.swift */,
 				45F203BF238D788500B42831 /* UIView+Layout.swift */,
+				45F203C1238EA2BE00B42831 /* Reactive+Binder.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -457,6 +460,7 @@
 				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
 				459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */,
 				459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */,
+				45F203C2238EA2BE00B42831 /* Reactive+Binder.swift in Sources */,
 				45F203BC2389E75000B42831 /* MemoDetailViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
