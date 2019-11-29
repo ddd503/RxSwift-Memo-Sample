@@ -16,7 +16,6 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak private var countLabel: UILabel!
     @IBOutlet weak private var tableView: UITableView! {
         didSet {
-            tableView.delegate = self
             tableView.register(MemoInfoCell.nib(), forCellReuseIdentifier: MemoInfoCell.identifier)
             tableView.tableFooterView = UIView()
         }
