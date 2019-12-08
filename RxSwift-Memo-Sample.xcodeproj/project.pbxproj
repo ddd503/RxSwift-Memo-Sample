@@ -185,23 +185,12 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
-		459AA48923567D9400C8BD2E /* ViewModel */ = {
+		459AA48923567D9400C8BD2E /* MemoList */ = {
 			isa = PBXGroup;
 			children = (
 				459AA4922357D1E000C8BD2E /* MemoListViewModel.swift */,
 			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		459AA48A23567D9700C8BD2E /* View */ = {
-			isa = PBXGroup;
-			children = (
-				459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */,
-				459AA4902356807900C8BD2E /* MemoListViewController.swift */,
-				45F203A22384523B00B42831 /* MemoInfoCell.swift */,
-				45F203A32384523B00B42831 /* MemoInfoCell.xib */,
-			);
-			path = View;
+			path = MemoList;
 			sourceTree = "<group>";
 		};
 		459AA48B23567D9A00C8BD2E /* Model */ = {
@@ -241,6 +230,24 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		45E5B289239CE846003AC0E0 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				459AA48923567D9400C8BD2E /* MemoList */,
+				45F203B52389E4C500B42831 /* MemoDetail */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		45E5B28A239CE84F003AC0E0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				45F203B32389E36E00B42831 /* MemoList */,
+				45F203B42389E4B600B42831 /* MemoDetail */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		45F203AD23897FC500B42831 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -255,8 +262,8 @@
 		45F203B22389E31D00B42831 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				45F203B32389E36E00B42831 /* MemoList */,
-				45F203B42389E4B600B42831 /* MemoDetail */,
+				45E5B28A239CE84F003AC0E0 /* View */,
+				45E5B289239CE846003AC0E0 /* ViewModel */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -264,8 +271,10 @@
 		45F203B32389E36E00B42831 /* MemoList */ = {
 			isa = PBXGroup;
 			children = (
-				459AA48A23567D9700C8BD2E /* View */,
-				459AA48923567D9400C8BD2E /* ViewModel */,
+				459AA48E2356806400C8BD2E /* MemoListViewController.storyboard */,
+				459AA4902356807900C8BD2E /* MemoListViewController.swift */,
+				45F203A22384523B00B42831 /* MemoInfoCell.swift */,
+				45F203A32384523B00B42831 /* MemoInfoCell.xib */,
 			);
 			path = MemoList;
 			sourceTree = "<group>";
@@ -273,27 +282,18 @@
 		45F203B42389E4B600B42831 /* MemoDetail */ = {
 			isa = PBXGroup;
 			children = (
-				45F203B62389E4C800B42831 /* View */,
-				45F203B52389E4C500B42831 /* ViewModel */,
+				45F203B72389E66300B42831 /* MemoDetailViewController.swift */,
+				45F203B82389E66300B42831 /* MemoDetailViewController.xib */,
 			);
 			path = MemoDetail;
 			sourceTree = "<group>";
 		};
-		45F203B52389E4C500B42831 /* ViewModel */ = {
+		45F203B52389E4C500B42831 /* MemoDetail */ = {
 			isa = PBXGroup;
 			children = (
 				45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */,
 			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		45F203B62389E4C800B42831 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				45F203B72389E66300B42831 /* MemoDetailViewController.swift */,
-				45F203B82389E66300B42831 /* MemoDetailViewController.xib */,
-			);
-			path = View;
+			path = MemoDetail;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
