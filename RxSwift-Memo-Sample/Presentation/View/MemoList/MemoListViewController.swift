@@ -20,6 +20,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             tableView.tableFooterView = UIView()
         }
     }
+    private var memos = BehaviorRelay<[Memo]>(value: [])
     private var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
@@ -28,19 +29,22 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
 
         // bind
 
-        let viewModel = MemoListViewModel(memoDataStore: MemoDataStoreNewImpl())
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memosCount: Driver.just(memos.value.count),
+                                                      memoDataStore: MemoDataStoreNewImpl(),
+                                                      addButtonTap: addButton.rx.tap.asSignal(),
+                                                      isEditing: rx_isEditing))
 
-        viewModel.memos
-            .asObservable()
+        viewModelOutput.didChangeMemoCount
+            .drive(countLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        memos
             .bind(to: tableView.rx.items(cellIdentifier: MemoInfoCell.identifier,
                                          cellType: MemoInfoCell.self)) { (row, element, cell) in
                                             cell.setInfo(memo: element)
         }
         .disposed(by: disposeBag)
-
-        viewModel.countLabelText
-            .drive(countLabel.rx.text)
-            .disposed(by: disposeBag)
 
         tableView.rx
             .modelSelected(Memo.self)
@@ -48,15 +52,6 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                 self?.transitionDetailMemoVC(memo: memo)
             })
             .disposed(by: disposeBag)
-
-        addButton.rx
-            .tap
-            .subscribe { [weak self] (_) in
-                if let self = self {
-                    self.tableView.isEditing ? self.showAllDeleteActionSheet(viewModel: viewModel) : self.transitionDetailMemoVC(memo: nil)
-                }
-        }
-        .disposed(by: disposeBag)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -75,21 +70,21 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     }
 
     private func showAllDeleteActionSheet(viewModel: MemoListViewModel) {
-        let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) { [weak self] in
-            guard let self = self else { return }
-            viewModel.deleteAllMemo
-                .catchError({ (error) -> Observable<()> in
-                    print(error.localizedDescription)
-                    return Observable.empty() // エラーがあっても完了まで流す
-                })
-                .subscribe(onCompleted: {
-                    self.setEditing(false, animated: true)
-                })
-                .disposed(by: self.disposeBag)
-        }
-        
-        let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
-        showAlertView(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
+//        let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) { [weak self] in
+//            guard let self = self else { return }
+//            viewModel.deleteAllMemo
+//                .catchError({ (error) -> Observable<()> in
+//                    print(error.localizedDescription)
+//                    return Observable.empty() // エラーがあっても完了まで流す
+//                })
+//                .subscribe(onCompleted: {
+//                    self.setEditing(false, animated: true)
+//                })
+//                .disposed(by: self.disposeBag)
+//        }
+//
+//        let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
+//        showAlertView(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
     }
 
     private func showAlertView(title: String? = nil, message: String? = nil,
@@ -101,4 +96,14 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
     }
 
+}
+
+extension UIViewController {
+    var rx_isEditing: Observable<Bool> {
+        return Observable<Bool>.create { (observer) in
+            observer.onNext(self.isEditing)
+            observer.onCompleted()
+            return Disposables.create()
+        }
+    }
 }
