@@ -15,12 +15,13 @@ final class MemoListViewModel: ViewModelType {
         let memosCount: Driver<Int>
         let memoDataStore: MemoDataStoreNew
         let addButtonTap: Signal<()>
-        let isEditing: Observable<Bool>
+        let isEditing: Driver<Bool>
     }
 
     struct Output {
         let didChangeMemoCount: Driver<String>
         let deleteAllMemo: Signal<()>
+        let showAllDeleteAlert: Signal<()>
     }
 
     func injection(input: Input) -> Output {
@@ -29,8 +30,18 @@ final class MemoListViewModel: ViewModelType {
             return Driver.just(text)
         }
 
-        let deleteAllMemo = input.memoDataStore.deleteAll().asSignal(onErrorSignalWith: Signal.never())
+        let isEditingWhenTapAddBotton = input.addButtonTap.withLatestFrom(input.isEditing)
 
-        return Output(didChangeMemoCount: didChangeMemoCount, deleteAllMemo: deleteAllMemo)
+        let showAllDeleteAlert = isEditingWhenTapAddBotton.flatMapLatest { (isEditing) -> Signal<()> in
+            return isEditing ? Signal.just(()) : Signal.never()
+        }
+
+        let deleteAllMemo = input.memoDataStore
+            .deleteAll()
+            .asSignal(onErrorSignalWith: Signal.never())
+
+        return Output(didChangeMemoCount: didChangeMemoCount,
+                      deleteAllMemo: deleteAllMemo,
+                      showAllDeleteAlert: showAllDeleteAlert)
     }
 }

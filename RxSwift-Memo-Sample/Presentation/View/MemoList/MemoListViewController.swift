@@ -33,10 +33,35 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             .injection(input: MemoListViewModel.Input(memosCount: Driver.just(memos.value.count),
                                                       memoDataStore: MemoDataStoreNewImpl(),
                                                       addButtonTap: addButton.rx.tap.asSignal(),
-                                                      isEditing: rx_isEditing))
+                                                      isEditing: tableView.rx_isEditing.asDriver(onErrorJustReturn: false)))
 
         viewModelOutput.didChangeMemoCount
             .drive(countLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        viewModelOutput.showAllDeleteAlert
+            .emit(onNext: { [weak self] (_) in
+                guard let self = self else { return }
+                let allDelete =
+                    ObservableAlertAction(title: "すべて削除",
+                                          style: .destructive) {
+                                            viewModelOutput.deleteAllMemo
+                                                .emit(onNext: {
+                                                    print("メモ全削除")
+                                                })
+                                                .disposed(by: self.disposeBag)
+                }
+                let cancel =
+                    ObservableAlertAction(title: "キャンセル",
+                                          style: .cancel, task: nil)
+
+                self.showAlert(title: nil, message: nil,
+                               style: .actionSheet, actions: [allDelete, cancel])
+                    .subscribe(onNext: { action in
+                        action.task?()
+                    })
+                    .disposed(by: self.disposeBag)
+            })
             .disposed(by: disposeBag)
 
         memos
@@ -68,37 +93,9 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         let memoDetailVC = MemoDetailViewController(memo: memo)
         navigationController?.pushViewController(memoDetailVC, animated: true)
     }
-
-    private func showAllDeleteActionSheet(viewModel: MemoListViewModel) {
-//        let allDelete = ObservableAlertAction(title: "すべて削除", style: .destructive) { [weak self] in
-//            guard let self = self else { return }
-//            viewModel.deleteAllMemo
-//                .catchError({ (error) -> Observable<()> in
-//                    print(error.localizedDescription)
-//                    return Observable.empty() // エラーがあっても完了まで流す
-//                })
-//                .subscribe(onCompleted: {
-//                    self.setEditing(false, animated: true)
-//                })
-//                .disposed(by: self.disposeBag)
-//        }
-//
-//        let cancel = ObservableAlertAction(title: "キャンセル", style: .cancel, task: nil)
-//        showAlertView(title: nil, message: nil, style: .actionSheet, actions: [allDelete, cancel])
-    }
-
-    private func showAlertView(title: String? = nil, message: String? = nil,
-                               style: UIAlertController.Style, actions: [ObservableAlertAction]) {
-        showAlert(title: nil, message: nil, style: style, actions: actions)
-            .subscribe(onNext: { action in
-                action.task?()
-            })
-            .disposed(by: disposeBag)
-    }
-
 }
 
-extension UIViewController {
+extension UITableView {
     var rx_isEditing: Observable<Bool> {
         return Observable<Bool>.create { (observer) in
             observer.onNext(self.isEditing)
