@@ -12,36 +12,18 @@ import RxSwift
 final class MemoListViewModel: ViewModelType {
 
     struct Input {
-        let memosCount: Driver<Int>
-        let memoDataStore: MemoDataStoreNew
-        let addButtonTap: Signal<()>
-        let isEditing: Driver<Bool>
+        let vcEditing: Driver<Bool>
+        let tappedAdd: Signal<()>
+        let tappedAllDelete: Signal<()>
     }
 
     struct Output {
-        let didChangeMemoCount: Driver<String>
-        let deleteAllMemo: Signal<()>
-        let showAllDeleteAlert: Signal<()>
+        let transitionCreateMemo: Driver<()>
+        let transitionDetailMemo: Driver<()>
     }
 
     func injection(input: Input) -> Output {
-        let didChangeMemoCount = input.memosCount.flatMap { (count) -> Driver<String> in
-            let text = count <= 0 ? "メモなし" : "\(count)件のメモ"
-            return Driver.just(text)
-        }
-
-        let isEditingWhenTapAddBotton = input.addButtonTap.withLatestFrom(input.isEditing)
-
-        let showAllDeleteAlert = isEditingWhenTapAddBotton.flatMapLatest { (isEditing) -> Signal<()> in
-            return isEditing ? Signal.just(()) : Signal.never()
-        }
-
-        let deleteAllMemo = input.memoDataStore
-            .deleteAll()
-            .asSignal(onErrorSignalWith: Signal.never())
-
-        return Output(didChangeMemoCount: didChangeMemoCount,
-                      deleteAllMemo: deleteAllMemo,
-                      showAllDeleteAlert: showAllDeleteAlert)
+        return Output(transitionCreateMemo: Driver.empty(),
+                      transitionDetailMemo: Driver.empty())
     }
 }
