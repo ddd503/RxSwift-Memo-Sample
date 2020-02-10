@@ -11,19 +11,27 @@ import RxSwift
 
 final class MemoListViewModel: ViewModelType {
 
+    private var memos = BehaviorRelay<[Memo]>(value: [])
+
     struct Input {
-        let vcEditing: Driver<Bool>
-        let tappedAdd: Signal<()>
-        let tappedAllDelete: Signal<()>
+        let memoDataStore: MemoDataStore
+        let tableViewEditing: Driver<Bool>
+        let tappedUnderRightButton: Signal<()>
     }
 
     struct Output {
         let transitionCreateMemo: Driver<()>
-        let transitionDetailMemo: Driver<()>
+        let showAllDeleteAlert: Driver<()>
+        let listDataSource: BehaviorRelay<[Memo]>
+        let updateMemoCount: Driver<Int>
+        let deleteAllMemo: Driver<()>
     }
-
+    
     func injection(input: Input) -> Output {
         return Output(transitionCreateMemo: Driver.empty(),
-                      transitionDetailMemo: Driver.empty())
+                      showAllDeleteAlert: Driver.empty(),
+                      listDataSource: self.memos,
+                      updateMemoCount: Driver.just(self.memos.value.count),
+                      deleteAllMemo: Driver.empty())
     }
 }
