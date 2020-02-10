@@ -32,7 +32,6 @@
 		45F203A42384523B00B42831 /* MemoInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203A22384523B00B42831 /* MemoInfoCell.swift */; };
 		45F203A52384523B00B42831 /* MemoInfoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203A32384523B00B42831 /* MemoInfoCell.xib */; };
 		45F203AF23897FF300B42831 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203AE23897FF300B42831 /* UIViewController+Alert.swift */; };
-		45F203B12389ABB000B42831 /* MemoDataStoreNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203B02389ABB000B42831 /* MemoDataStoreNew.swift */; };
 		45F203B92389E66300B42831 /* MemoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203B72389E66300B42831 /* MemoDetailViewController.swift */; };
 		45F203BA2389E66300B42831 /* MemoDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 45F203B82389E66300B42831 /* MemoDetailViewController.xib */; };
 		45F203BC2389E75000B42831 /* MemoDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */; };
@@ -94,7 +93,6 @@
 		45F203A22384523B00B42831 /* MemoInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoInfoCell.swift; sourceTree = "<group>"; };
 		45F203A32384523B00B42831 /* MemoInfoCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoInfoCell.xib; sourceTree = "<group>"; };
 		45F203AE23897FF300B42831 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
-		45F203B02389ABB000B42831 /* MemoDataStoreNew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDataStoreNew.swift; sourceTree = "<group>"; };
 		45F203B72389E66300B42831 /* MemoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewController.swift; sourceTree = "<group>"; };
 		45F203B82389E66300B42831 /* MemoDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MemoDetailViewController.xib; sourceTree = "<group>"; };
 		45F203BB2389E75000B42831 /* MemoDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoDetailViewModel.swift; sourceTree = "<group>"; };
@@ -219,7 +217,6 @@
 			children = (
 				459AA4962358CFF600C8BD2E /* MemoDataStore.swift */,
 				459AA49B235ADB2C00C8BD2E /* CoreDataPropaties.swift */,
-				45F203B02389ABB000B42831 /* MemoDataStoreNew.swift */,
 			);
 			path = DataStore;
 			sourceTree = "<group>";
@@ -460,7 +457,6 @@
 				45F203BE238C8D8300B42831 /* String+.swift in Sources */,
 				459AA4912356807900C8BD2E /* MemoListViewController.swift in Sources */,
 				45F203B92389E66300B42831 /* MemoDetailViewController.swift in Sources */,
-				45F203B12389ABB000B42831 /* MemoDataStoreNew.swift in Sources */,
 				459AA4932357D1E000C8BD2E /* MemoListViewModel.swift in Sources */,
 				459AA49C235ADB2C00C8BD2E /* CoreDataPropaties.swift in Sources */,
 				459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */,

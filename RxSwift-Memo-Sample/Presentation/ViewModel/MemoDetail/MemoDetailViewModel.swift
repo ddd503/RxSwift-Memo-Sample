@@ -16,7 +16,7 @@ class MemoDetailViewModel {
     let startSaveMemo: Driver<Memo>
     let completeSaveMemo: Observable<Notification>
 
-    init(memo: Memo?, textViewText: Driver<String>, memoDataStore: MemoDataStoreNew, tappedDone: Signal<()>) {
+    init(memo: Memo?, textViewText: Driver<String>, memoDataStore: MemoDataStore, tappedDone: Signal<()>) {
         // タップアクション → メモ作成 or メモ更新
         startSaveMemo = tappedDone.withLatestFrom(textViewText)
             .flatMapLatest({ (text) -> Driver<Memo> in

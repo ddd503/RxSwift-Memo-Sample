@@ -36,7 +36,7 @@ class MemoDetailViewController: UIViewController {
 
         let viewModel = MemoDetailViewModel(memo: memo,
                                             textViewText: textView.rx.text.orEmpty.asDriver(),
-                                            memoDataStore: MemoDataStoreNewImpl(),
+                                            memoDataStore: MemoDataStoreImpl(),
                                             tappedDone: doneButtonItem.rx.tap.asSignal())
 
         viewModel.startSaveMemo
