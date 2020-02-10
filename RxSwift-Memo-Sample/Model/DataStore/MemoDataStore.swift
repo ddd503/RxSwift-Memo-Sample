@@ -7,122 +7,123 @@
 //
 
 import CoreData
+import RxSwift
+import RxCocoa
 
 protocol MemoDataStore {
-    func createMemo() -> Memo?
-    func readAll(_ completion: (Result<[Memo], Error>) -> ())
-    func readMemo(uniqueId: String) throws -> Memo
-    func updateMemo(memo: Memo)
-    func deleteAll()
-    func deleteMemo(uniqueId: String)
-    func countAll() -> Int?
+    func createMemo(text: String) -> Observable<Memo>
+    func readAll() -> Observable<[Memo]>
+    func readMemo(uniqueId: String) -> Observable<Memo>
+    func updateMemo(memo: Memo, text: String) -> Observable<Memo>
+    func deleteAll() -> Observable<Void>
+    func deleteMemo(uniqueId: String) -> Observable<Void>
+    func countAll() -> Observable<Int>
 }
 
 enum MemoDataStoreError: Error {
-    case isNil
+    case notFoundFetchedMemos
+    case notFoundEntity
     case empty
 }
 
 struct MemoDataStoreImpl: MemoDataStore {
-    func createMemo() -> Memo? {
+    func createMemo(text: String) -> Observable<Memo> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        guard let entity = NSEntityDescription.entity(forEntityName: "Memo", in: context), let allMemoCount = countAll() else { return nil }
-        let memo = Memo(entity: entity, insertInto: context)
-        memo.uniqueId = "\(allMemoCount + 1)"
-        return memo
-    }
-
-    func readAll(_ completion: (Result<[Memo], Error>) -> ()) {
-        fetchMemo(predicates: [], sortKey: "editDate", completion: completion)
-    }
-
-    func readMemo(uniqueId: String) throws -> Memo {
-        let memos = try fetchMemo(predicates: [NSPredicate(format: "uniqueId == %@", uniqueId)], sortKey: "editDate")
-        return memos[0]
-    }
-
-    /// クロージャで返す版
-    private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false, completion: (Result<[Memo], Error>) -> ()) {
-        let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-
-        let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                           managedObjectContext: context,
-                                                           sectionNameKeyPath: nil,
-                                                           cacheName: nil)
-        do {
-            try resultsController.performFetch()
-            guard let objects = resultsController.fetchedObjects, !objects.isEmpty else {
-                completion(.failure(MemoDataStoreError.empty))
-                return
-            }
-            completion(.success(objects))
-        } catch let error as NSError {
-            completion(.failure(error))
-        }
-    }
-
-    /// エラーをthrowする版
-    private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false, shouldErrorEmpty: Bool = true) throws -> [Memo] {
-        let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-
-        let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                           managedObjectContext: context,
-                                                           sectionNameKeyPath: nil,
-                                                           cacheName: nil)
-        do {
-            try resultsController.performFetch()
-            if let objects = resultsController.fetchedObjects {
-                // 0件をエラーとするかどうか
-                if shouldErrorEmpty {
-                    guard !objects.isEmpty else {
-                        throw MemoDataStoreError.empty
-                    }
-                    return objects
-                } else {
-                    return objects
+        let entity = NSEntityDescription.entity(forEntityName: "Memo", in: context)
+        return countAll()
+            .flatMap { (memosCount) -> Observable<Memo> in
+                guard let entity = entity else {
+                    return Observable.error(MemoDataStoreError.notFoundEntity)
                 }
-            } else {
-                throw MemoDataStoreError.isNil
-            }
-        } catch let error as NSError {
-            throw error
+                let memo = Memo(entity: entity, insertInto: context)
+                context.performAndWait {
+                    memo.uniqueId = "\(memosCount + 1)"
+                    memo.title = text.firstLine
+                    memo.content = text.afterSecondLine
+                    memo.editDate = Date()
+                    self.saveContext(context)
+                }
+                return Observable.just(memo)
         }
     }
 
-    func updateMemo(memo: Memo) {
-        guard let context = memo.managedObjectContext else { return }
-        saveContext(context)
+    func readAll() -> Observable<[Memo]> {
+        return fetchMemo(predicates: [], sortKey: "editDate")
     }
 
-    func deleteAll() {
+    func readMemo(uniqueId: String) -> Observable<Memo> {
+        return fetchMemo(predicates: [NSPredicate(format: "uniqueId == %@", uniqueId)], sortKey: "editDate")
+            .ifEmpty(switchTo: Observable.error(MemoDataStoreError.empty))
+            .flatMap { (memos) -> Observable<Memo> in
+                return Observable.just(memos[0])
+        }
+    }
+
+    private func fetchMemo(predicates: [NSPredicate], sortKey: String, ascending: Bool = false) -> Observable<[Memo]> {
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+
+        let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                           managedObjectContext: context,
+                                                           sectionNameKeyPath: nil,
+                                                           cacheName: nil)
+
+        return Observable.just(resultsController)
+            .flatMap { (fetchResultController) -> Observable<[Memo]> in
+                try fetchResultController.performFetch()
+                if let memos = fetchResultController.fetchedObjects {
+                    return Observable.of(memos)
+                } else {
+                    return Observable.error(MemoDataStoreError.notFoundFetchedMemos)
+                }
+        }
+        .asObservable()
+    }
+
+    func updateMemo(memo: Memo, text: String) -> Observable<Memo> {
+        guard let context = memo.managedObjectContext else { return Observable.never() }
+        context.performAndWait {
+            memo.title = text.firstLine
+            memo.content = text.afterSecondLine
+            memo.editDate = Date()
+            self.saveContext(context)
+        }
+        return Observable.just(memo)
+    }
+
+    func deleteAll() -> Observable<Void> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Memo")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        do {
-            try context.execute(deleteRequest)
-        } catch let error as NSError {
-            print("error: \(error.localizedDescription)")
+
+        return Observable.just(deleteRequest)
+            .flatMap { (request) -> Observable<Void> in
+                let result = try context.execute(request)
+                print("削除結果：\(result)")
+                return Observable.just(())
         }
     }
 
-    func deleteMemo(uniqueId: String) {
+    func deleteMemo(uniqueId: String) -> Observable<Void> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        guard let targetMemo = try? readMemo(uniqueId: uniqueId) else { return }
-        context.delete(targetMemo)
-        saveContext(context)
+        return Observable.just(uniqueId)
+            .flatMap { (id) -> Observable<Memo> in
+                return self.readMemo(uniqueId: id)
+        }
+        .map { (memo) in
+            context.delete(memo)
+            return self.saveContext(context)
+        }
+        .asObservable()
     }
 
-    func countAll() -> Int? {
-        guard let memos = try? fetchMemo(predicates: [], sortKey: "editDate", shouldErrorEmpty: false) else { return nil }
-        return memos.count
+    func countAll() -> Observable<Int> {
+        return fetchMemo(predicates: [], sortKey: "editDate").flatMap { (memos) -> Observable<Int> in
+            return Observable.just(memos.count)
+        }
     }
 
     func saveContext (_ context: NSManagedObjectContext) {
