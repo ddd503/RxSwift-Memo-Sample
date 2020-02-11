@@ -111,6 +111,17 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                 self?.tableView.isEditing = isEditing
             })
             .disposed(by: disposeBag)
+
+        /// 画面遷移後
+        navigationController?.rx
+            .didShow
+            .subscribe({ [weak self] (_) in
+                guard let self = self else { return }
+                if let indexPathForSelectedRow = self.tableView.indexPathForSelectedRow {
+                    self.tableView.deselectRow(at: indexPathForSelectedRow, animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
