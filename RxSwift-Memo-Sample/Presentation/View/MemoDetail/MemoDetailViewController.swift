@@ -13,12 +13,12 @@ import RxCocoa
 class MemoDetailViewController: UIViewController {
 
     @IBOutlet weak private var textView: UITextView!
+    private let viewModel: MemoDetailViewModel
     private var doneButtonItem: UIBarButtonItem!
-    private let memo: Memo?
     private var disposeBag = DisposeBag()
 
-    init(memo: Memo?) {
-        self.memo = memo
+    init(viewModel: MemoDetailViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: String(describing: MemoDetailViewController.self), bundle: .main)
     }
 
@@ -32,22 +32,23 @@ class MemoDetailViewController: UIViewController {
         navigationItem.rightBarButtonItem = doneButtonItem
         textView.becomeFirstResponder()
 
-        // bind
+        let viewModelOutput =
+            viewModel.injection(input: MemoDetailViewModel.Input(memoDataStore: MemoDataStoreImpl(),
+                                                                 tappedDoneButton: doneButtonItem.rx.tap.asSignal(),
+                                                                 textViewText: textView.rx.text.orEmpty.asDriver()))
 
-        let viewModel = MemoDetailViewModel(memo: memo,
-                                            textViewText: textView.rx.text.orEmpty.asDriver(),
-                                            memoDataStore: MemoDataStoreImpl(),
-                                            tappedDone: doneButtonItem.rx.tap.asSignal())
-
-        viewModel.startSaveMemo
-            .drive(onNext: { memo in
-                print("変更があったメモ: \(memo)")
+        viewModelOutput.setupText
+            .drive(onNext: { [weak self] text in
+                self?.textView.text = text
             })
             .disposed(by: disposeBag)
 
-        viewModel.completeSaveMemo
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] notification in
+        viewModelOutput.saveMemoText
+            .drive()
+            .disposed(by: disposeBag)
+        
+        viewModelOutput.returnMemoList
+            .drive(onNext: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
@@ -58,5 +59,4 @@ class MemoDetailViewController: UIViewController {
             .bind(to: doneButtonItem.rx.isEnableEmpty)
             .disposed(by: disposeBag)
     }
-
 }

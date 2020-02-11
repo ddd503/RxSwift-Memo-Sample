@@ -32,42 +32,37 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             viewModel.injection(input: MemoListViewModel.Input(memoDataStore: MemoDataStoreImpl(),
                                                                tableViewEditing: tableViewEditing.asDriver(onErrorDriveWith: Driver.never()),
                                                                tappedUnderRightButton: underRightButton.rx.tap.asSignal()))
-        // メモリストの取得
+
         viewModelOutput.updateMemosAtStartUp
             .drive(onNext: { [weak self] in
                 self?.tableView.reloadData()
             })
             .disposed(by: disposeBag)
 
-        // メモ保存完了通知
         viewModelOutput.updateMemosAtCompleteSaveMemo
             .drive(onNext: { [weak self]  in
                 self?.tableView.reloadData()
             })
             .disposed(by: disposeBag)
 
-        // 新規作成画面へ遷移
         viewModelOutput.transitionCreateMemo
             .drive(onNext: { [weak self] in
                 self?.transitionDetailMemoVC()
             })
             .disposed(by: disposeBag)
 
-        // メモ数表示の更新
         viewModelOutput.updateMemoCount
             .drive(onNext: { [weak self] memoCount in
                 self?.countLabel.text = (memoCount > 0) ? "\(memoCount)件のメモ" : "メモなし"
             })
             .disposed(by: disposeBag)
 
-        // ボタンタイトルの更新
         viewModelOutput.updateButtonTitle
             .drive(onNext: { [weak self] buttonTitle in
                 self?.underRightButton.setTitle(buttonTitle, for: .normal)
             })
             .disposed(by: disposeBag)
 
-        // 全削除アラートを出す
         viewModelOutput.showAllDeleteAlert
             .drive(onNext: { [weak self] (_) in
                 guard let self = self else { return }
@@ -92,7 +87,6 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             })
             .disposed(by: disposeBag)
 
-        // TableViewDataSource
         viewModelOutput.listDataSource
             .bind(to: tableView.rx.items(cellIdentifier: MemoInfoCell.identifier,
                                          cellType: MemoInfoCell.self)) { (row, element, cell) in
@@ -100,7 +94,6 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         }
         .disposed(by: disposeBag)
 
-        // TableView didSelect Item (新規作成画面へ遷移)
         tableView.rx.modelSelected(Memo.self)
             .subscribe(onNext: { [weak self] memo in
                 self?.transitionDetailMemoVC(memo: memo)
@@ -117,7 +110,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     /// メモ作成画面　or メモ編集画面に遷移（Memoを渡した場合はその情報を基に詳細画面を開き、渡さない場合は新規作成画面を開く）
     /// - Parameter memo: Memo
     private func transitionDetailMemoVC(memo: Memo? = nil) {
-        let memoDetailVC = MemoDetailViewController(memo: memo)
+        let memoDetailVC = MemoDetailViewController(viewModel: MemoDetailViewModel(memo: memo))
         navigationController?.pushViewController(memoDetailVC, animated: true)
     }
 }
