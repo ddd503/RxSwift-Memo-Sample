@@ -46,13 +46,14 @@ class MemoDetailViewController: UIViewController {
         viewModelOutput.saveMemoText
             .drive()
             .disposed(by: disposeBag)
-        
+
         viewModelOutput.returnMemoList
             .drive(onNext: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
 
+        // TextViewに文字が入力されていない時はDoneボタンを非活性にする
         textView.rx.text
             .orEmpty
             .asObservable()

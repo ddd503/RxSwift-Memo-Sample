@@ -72,6 +72,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                                                             .drive(onNext: { [weak self]  in
                                                                 // アニメーション入れるならIndexPathで更新かける
                                                                 self?.tableView.reloadData()
+                                                                self?.tableViewEditing.accept(false)
                                                             })
                                                             .disposed(by: self.disposeBag)
                 }
@@ -94,17 +95,24 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         }
         .disposed(by: disposeBag)
 
+        /// テーブルビューのセルタップ時
         tableView.rx.modelSelected(Memo.self)
             .subscribe(onNext: { [weak self] memo in
                 self?.transitionDetailMemoVC(memo: memo)
+            })
+            .disposed(by: disposeBag)
+
+        /// テーブルビューの編集モード切り替え時
+        tableViewEditing.asDriver()
+            .drive(onNext: { [weak self] isEditing in
+                self?.tableView.isEditing = isEditing
             })
             .disposed(by: disposeBag)
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
-        tableView.isEditing = isEditing
-        tableViewEditing.accept(editing)
+        tableViewEditing.accept(isEditing)
     }
 
     /// メモ作成画面　or メモ編集画面に遷移（Memoを渡した場合はその情報を基に詳細画面を開き、渡さない場合は新規作成画面を開く）

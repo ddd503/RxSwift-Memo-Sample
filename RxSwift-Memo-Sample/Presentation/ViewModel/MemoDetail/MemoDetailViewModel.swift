@@ -39,7 +39,7 @@ class MemoDetailViewModel: ViewModelType {
         let saveMemoText: Driver<()>
 
         if let memo = self.memo {
-            // 既存メモの更新
+            // 既存メモの更新時
             setupText = Driver.just((memo.title ?? "") + "\n" + (memo.content ?? ""))
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText).flatMap({ (text) -> Driver<()> in
                 return input.memoDataStore
@@ -48,7 +48,7 @@ class MemoDetailViewModel: ViewModelType {
                     .asDriver(onErrorDriveWith: Driver.never())
             })
         } else {
-            // 新規メモの作成
+            // 新規メモの作成時
             setupText = Driver.never()
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText).flatMap({ (text) -> Driver<()> in
                 return input.memoDataStore
