@@ -21,6 +21,7 @@ final class MemoListViewModel: ViewModelType {
 
     struct Output {
         let updateMemosAtStartUp: Driver<()>
+        let updateMemosAtCompleteSaveMemo: Driver<()>
         let transitionCreateMemo: Driver<()>
         let showAllDeleteAlert: Driver<()>
         let listDataSource: BehaviorRelay<[Memo]>
@@ -35,6 +36,17 @@ final class MemoListViewModel: ViewModelType {
             .flatMap { [weak self] (memos) -> Observable<()> in
                 self?.memos.accept(memos)
                 return Observable.just(())
+        }
+        .asDriver(onErrorDriveWith: Driver.never())
+
+        let updateMemosAtCompleteSaveMemo = NotificationCenter.default.rx
+            .notification(.NSManagedObjectContextDidSave)
+            .flatMap { (notification) -> Observable<()> in
+                return input.memoDataStore.readAll()
+                    .flatMap { [weak self] (memos) -> Observable<()> in
+                        self?.memos.accept(memos)
+                        return Observable.just(())
+                }
         }
         .asDriver(onErrorDriveWith: Driver.never())
 
@@ -66,6 +78,7 @@ final class MemoListViewModel: ViewModelType {
             .asDriver(onErrorDriveWith: Driver.never())
 
         return Output(updateMemosAtStartUp: updateMemosAtStartUp,
+                      updateMemosAtCompleteSaveMemo: updateMemosAtCompleteSaveMemo,
                       transitionCreateMemo: transitionCreateMemo,
                       showAllDeleteAlert: showAllDeleteAlert,
                       listDataSource: self.memos,

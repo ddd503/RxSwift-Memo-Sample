@@ -39,6 +39,13 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             })
             .disposed(by: disposeBag)
 
+        // メモ保存完了通知
+        viewModelOutput.updateMemosAtCompleteSaveMemo
+            .drive(onNext: { [weak self]  in
+                self?.tableView.reloadData()
+            })
+            .disposed(by: disposeBag)
+
         // 新規作成画面へ遷移
         viewModelOutput.transitionCreateMemo
             .drive(onNext: { [weak self] in
