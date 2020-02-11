@@ -73,9 +73,10 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                 guard let self = self else { return }
                 let allDelete = ObservableAlertAction(title: "すべて削除",
                                                       style: .destructive) {
-                                                        viewModelOutput.deleteAllMemo
-                                                            .drive(onNext: {
-                                                                print("全削除実行")
+                                                        viewModelOutput.updateMemosAtDeleteAllMemo
+                                                            .drive(onNext: { [weak self]  in
+                                                                // アニメーション入れるならIndexPathで更新かける
+                                                                self?.tableView.reloadData()
                                                             })
                                                             .disposed(by: self.disposeBag)
                 }
