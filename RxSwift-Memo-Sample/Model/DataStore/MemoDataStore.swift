@@ -11,12 +11,25 @@ import RxSwift
 import RxCocoa
 
 protocol MemoDataStore {
+    /// 新規メモを作成する
+    /// - Parameter text: メモ内容
     func createMemo(text: String) -> Observable<Memo>
+    /// 全メモを取得する
     func readAll() -> Observable<[Memo]>
+    /// ID指定でメモを1件取得する
+    /// - Parameter uniqueId: ユニークID
     func readMemo(uniqueId: String) -> Observable<Memo>
+    /// メモを更新する
+    /// - Parameters:
+    ///   - memo: 更新するメモ
+    ///   - text: 更新内容
     func updateMemo(memo: Memo, text: String) -> Observable<Memo>
+    /// 全メモを削除する
     func deleteAll() -> Observable<Void>
+    /// ID指定でメモを削除する
+    /// - Parameter uniqueId: ユニークID
     func deleteMemo(uniqueId: String) -> Observable<Void>
+    /// 全メモ件数を取得する
     func countAll() -> Observable<Int>
 }
 
