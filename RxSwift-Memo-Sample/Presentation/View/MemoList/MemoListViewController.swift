@@ -28,35 +28,38 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = editButtonItem
-        
+
         let viewModelOutput =
             viewModel.injection(input: MemoListViewModel.Input(memoDataStore: MemoDataStoreImpl(),
                                                                tableViewEditing: tableViewEditing.asDriver(onErrorDriveWith: Driver.never()),
-                                                               tappedUnderRightButton: underRightButton.rx.tap.asSignal()))
+                                                               tappedUnderRightButton: underRightButton.rx.tap.asSignal(),
+                                                               deleteMemoAction: tableView.rx.modelDeleted(Memo.self).compactMap { $0.uniqueId }.asDriver(onErrorDriveWith: Driver.never())))
+        viewModelOutput.updateMemoList
+        .drive(onNext: { [weak self] memos in
+            self?.tableView.reloadData()
+            self?.countLabel.text = memos.isEmpty ? "メモなし" : "\(memos.count)件のメモ"
+            self?.emptyLabel.isHidden = !memos.isEmpty
+            if memos.isEmpty {
+                self?.setEditing(false, animated: true)
+            }
+        })
+        .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtStartUp
-            .drive(onNext: { [weak self] in
-                self?.tableView.reloadData()
-            })
+            .drive()
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtCompleteSaveMemo
-            .drive(onNext: { [weak self]  in
-                self?.tableView.reloadData()
-            })
+            .drive()
+            .disposed(by: disposeBag)
+
+        viewModelOutput.updateMemosAtDeleteMemo
+            .drive()
             .disposed(by: disposeBag)
 
         viewModelOutput.transitionCreateMemo
             .drive(onNext: { [weak self] in
                 self?.transitionDetailMemoVC()
-            })
-            .disposed(by: disposeBag)
-
-        viewModelOutput.updateMemoCount
-            .drive(onNext: { [weak self] memoCount in
-                let isEmptyMemos = 1 > memoCount
-                self?.countLabel.text = isEmptyMemos ? "メモなし" : "\(memoCount)件のメモ"
-                self?.emptyLabel.isHidden = !isEmptyMemos
             })
             .disposed(by: disposeBag)
 
@@ -74,8 +77,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                                                         viewModelOutput.updateMemosAtDeleteAllMemo
                                                             .drive(onNext: { [weak self]  in
                                                                 // アニメーション入れるならIndexPathで更新かける
-                                                                self?.tableView.reloadData()
-                                                                self?.tableViewEditing.accept(false)
+                                                                self?.setEditing(false, animated: true)
                                                             })
                                                             .disposed(by: self.disposeBag)
                 }
@@ -126,7 +128,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
-        tableViewEditing.accept(isEditing)
+        tableViewEditing.accept(editing)
     }
 
     /// メモ作成画面　or メモ編集画面に遷移（Memoを渡した場合はその情報を基に詳細画面を開き、渡さない場合は新規作成画面を開く）
