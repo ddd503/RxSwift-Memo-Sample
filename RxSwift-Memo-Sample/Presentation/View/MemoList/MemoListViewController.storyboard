@@ -47,6 +47,13 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="720"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="作成されたメモがありません" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="GaL-c9-kHU">
+                                <rect key="frame" x="0.0" y="400" width="414" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -64,6 +71,7 @@
                     <navigationItem key="navigationItem" title="メモ" id="8QY-Tm-cBg"/>
                     <connections>
                         <outlet property="countLabel" destination="AXN-6T-2rJ" id="pwB-AR-TRy"/>
+                        <outlet property="emptyLabel" destination="GaL-c9-kHU" id="Yro-re-sy9"/>
                         <outlet property="tableView" destination="wTd-bN-sMQ" id="Akd-QO-w9t"/>
                         <outlet property="underRightButton" destination="tIO-U4-1JG" id="P7F-5C-5j7"/>
                     </connections>

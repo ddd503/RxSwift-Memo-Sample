@@ -14,6 +14,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     
     @IBOutlet weak private var underRightButton: UIButton!
     @IBOutlet weak private var countLabel: UILabel!
+    @IBOutlet weak private var emptyLabel: UILabel!
     @IBOutlet weak private var tableView: UITableView! {
         didSet {
             tableView.register(MemoInfoCell.nib(), forCellReuseIdentifier: MemoInfoCell.identifier)
@@ -53,7 +54,9 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
 
         viewModelOutput.updateMemoCount
             .drive(onNext: { [weak self] memoCount in
-                self?.countLabel.text = (memoCount > 0) ? "\(memoCount)件のメモ" : "メモなし"
+                let isEmptyMemos = 1 > memoCount
+                self?.countLabel.text = isEmptyMemos ? "メモなし" : "\(memoCount)件のメモ"
+                self?.emptyLabel.isHidden = !isEmptyMemos
             })
             .disposed(by: disposeBag)
 
