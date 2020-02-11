@@ -25,6 +25,10 @@ class MemoInfoCell: UITableViewCell {
     func setInfo(memo: Memo) {
         titleLabel.text = memo.title
         contentLabel.text = memo.content
-        dateLabel.text = "00:00"
+        guard let editDate = memo.editDate else { return }
+        let dateFormatter = DateFormatter()
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
+        dateFormatter.dateFormat = "yyyy/MM/dd  HH:mm"
+        dateLabel.text = dateFormatter.string(from: editDate)
     }
 }
