@@ -7,18 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		451D9E0323F422AA009C1E19 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451D9E0223F422AA009C1E19 /* RxBlocking.framework */; };
+		451D9E0523F422BC009C1E19 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451D9E0423F422BC009C1E19 /* RxTest.framework */; };
 		459AA45323551FC000C8BD2E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45223551FC000C8BD2E /* AppDelegate.swift */; };
 		459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45423551FC000C8BD2E /* SceneDelegate.swift */; };
 		459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45B23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld */; };
 		459AA45F23551FC400C8BD2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 459AA45E23551FC400C8BD2E /* Assets.xcassets */; };
 		459AA46223551FC400C8BD2E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 459AA46023551FC400C8BD2E /* LaunchScreen.storyboard */; };
-		459AA4702355321200C8BD2E /* RxSwift_Memo_SampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA46F2355321200C8BD2E /* RxSwift_Memo_SampleTests.swift */; };
 		459AA47B23567A7A00C8BD2E /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 459AA47A23567A7A00C8BD2E /* RxSwift.framework */; };
 		459AA47C23567A7A00C8BD2E /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 459AA47A23567A7A00C8BD2E /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		459AA47F23567A8900C8BD2E /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 459AA47E23567A8900C8BD2E /* RxCocoa.framework */; };
 		459AA48023567A8900C8BD2E /* RxCocoa.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 459AA47E23567A8900C8BD2E /* RxCocoa.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		459AA48223567AA700C8BD2E /* RxRelay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 459AA48123567AA700C8BD2E /* RxRelay.framework */; };
-		459AA48323567AA700C8BD2E /* RxRelay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 459AA48123567AA700C8BD2E /* RxRelay.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		459AA48623567D6E00C8BD2E /* Memo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA48423567D6E00C8BD2E /* Memo+CoreDataClass.swift */; };
 		459AA48723567D6E00C8BD2E /* Memo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA48523567D6E00C8BD2E /* Memo+CoreDataProperties.swift */; };
 		459AA48D23567F6800C8BD2E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 459AA48C23567F6800C8BD2E /* Default-568h@2x.png */; };
@@ -59,7 +58,6 @@
 			files = (
 				459AA48023567A8900C8BD2E /* RxCocoa.framework in Embed Frameworks */,
 				459AA47C23567A7A00C8BD2E /* RxSwift.framework in Embed Frameworks */,
-				459AA48323567AA700C8BD2E /* RxRelay.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,6 +65,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		451D9E0223F422AA009C1E19 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
+		451D9E0423F422BC009C1E19 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
 		459AA44F23551FC000C8BD2E /* RxSwift-Memo-Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RxSwift-Memo-Sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		459AA45223551FC000C8BD2E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		459AA45423551FC000C8BD2E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -75,7 +75,6 @@
 		459AA46123551FC400C8BD2E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		459AA46323551FC400C8BD2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		459AA46D2355321200C8BD2E /* RxSwift-Memo-SampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RxSwift-Memo-SampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		459AA46F2355321200C8BD2E /* RxSwift_Memo_SampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxSwift_Memo_SampleTests.swift; sourceTree = "<group>"; };
 		459AA4712355321200C8BD2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		459AA47A23567A7A00C8BD2E /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		459AA47E23567A8900C8BD2E /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
@@ -108,7 +107,6 @@
 			files = (
 				459AA47F23567A8900C8BD2E /* RxCocoa.framework in Frameworks */,
 				459AA47B23567A7A00C8BD2E /* RxSwift.framework in Frameworks */,
-				459AA48223567AA700C8BD2E /* RxRelay.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,12 +114,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				451D9E0523F422BC009C1E19 /* RxTest.framework in Frameworks */,
+				451D9E0323F422AA009C1E19 /* RxBlocking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		45035EAA23F35576008D37A7 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
 		459AA44623551FC000C8BD2E = {
 			isa = PBXGroup;
 			children = (
@@ -146,7 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				45F203B22389E31D00B42831 /* Presentation */,
-				459AA48B23567D9A00C8BD2E /* Model */,
+				459AA48B23567D9A00C8BD2E /* Data */,
 				45F203AD23897FC500B42831 /* Extensions */,
 				459AA48823567D9100C8BD2E /* Other */,
 			);
@@ -156,8 +163,8 @@
 		459AA46E2355321200C8BD2E /* RxSwift-Memo-SampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				459AA498235AB03200C8BD2E /* Model */,
-				459AA46F2355321200C8BD2E /* RxSwift_Memo_SampleTests.swift */,
+				45035EAA23F35576008D37A7 /* Presentation */,
+				459AA498235AB03200C8BD2E /* Data */,
 				459AA4712355321200C8BD2E /* Info.plist */,
 			);
 			path = "RxSwift-Memo-SampleTests";
@@ -166,6 +173,8 @@
 		459AA47923567A7A00C8BD2E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				451D9E0423F422BC009C1E19 /* RxTest.framework */,
+				451D9E0223F422AA009C1E19 /* RxBlocking.framework */,
 				459AA48123567AA700C8BD2E /* RxRelay.framework */,
 				459AA47E23567A8900C8BD2E /* RxCocoa.framework */,
 				459AA47A23567A7A00C8BD2E /* RxSwift.framework */,
@@ -193,13 +202,13 @@
 			path = MemoList;
 			sourceTree = "<group>";
 		};
-		459AA48B23567D9A00C8BD2E /* Model */ = {
+		459AA48B23567D9A00C8BD2E /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				459AA4952358CFB600C8BD2E /* DataStore */,
 				459AA4942358CFB400C8BD2E /* Entity */,
 			);
-			path = Model;
+			path = Data;
 			sourceTree = "<group>";
 		};
 		459AA4942358CFB400C8BD2E /* Entity */ = {
@@ -221,12 +230,12 @@
 			path = DataStore;
 			sourceTree = "<group>";
 		};
-		459AA498235AB03200C8BD2E /* Model */ = {
+		459AA498235AB03200C8BD2E /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */,
 			);
-			path = Model;
+			path = Data;
 			sourceTree = "<group>";
 		};
 		45E5B289239CE846003AC0E0 /* ViewModel */ = {
@@ -325,7 +334,6 @@
 				459AA4692355321200C8BD2E /* Sources */,
 				459AA46A2355321200C8BD2E /* Frameworks */,
 				459AA46B2355321200C8BD2E /* Resources */,
-				459AA478235539D700C8BD2E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -409,26 +417,6 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxRelay.framework",
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n";
-		};
-		459AA478235539D700C8BD2E /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/RxTest.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxBlocking.framework",
 			);
 			outputFileListPaths = (
 			);
@@ -469,7 +457,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				459AA4702355321200C8BD2E /* RxSwift_Memo_SampleTests.swift in Sources */,
 				459AA49A235AB04900C8BD2E /* MemoDataStoreTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -664,11 +651,16 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVR5UQEHBD;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "RxSwift-Memo-SampleTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kawahara.RxSwift-Memo-SampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -684,11 +676,16 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVR5UQEHBD;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "RxSwift-Memo-SampleTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kawahara.RxSwift-Memo-SampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
