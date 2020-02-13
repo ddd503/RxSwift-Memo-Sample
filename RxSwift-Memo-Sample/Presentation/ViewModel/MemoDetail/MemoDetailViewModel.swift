@@ -44,7 +44,6 @@ class MemoDetailViewModel: ViewModelType {
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText).flatMap({ (text) -> Driver<()> in
                 return input.memoDataStore
                     .updateMemo(memo: memo, text: text)
-                    .map { _ in }
                     .asDriver(onErrorDriveWith: Driver.never())
             })
         } else {
@@ -52,8 +51,7 @@ class MemoDetailViewModel: ViewModelType {
             setupText = Driver.never()
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText).flatMap({ (text) -> Driver<()> in
                 return input.memoDataStore
-                    .createMemo(text: text)
-                    .map { _ in }
+                    .createMemo(text: text, uniqueId: nil)
                     .asDriver(onErrorDriveWith: Driver.never())
             })
         }
