@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		451D9E0323F422AA009C1E19 /* RxBlocking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451D9E0223F422AA009C1E19 /* RxBlocking.framework */; };
 		451D9E0523F422BC009C1E19 /* RxTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451D9E0423F422BC009C1E19 /* RxTest.framework */; };
+		451D9E0823F6CDEE009C1E19 /* MemoRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451D9E0723F6CDEE009C1E19 /* MemoRepository.swift */; };
 		459AA45323551FC000C8BD2E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45223551FC000C8BD2E /* AppDelegate.swift */; };
 		459AA45523551FC000C8BD2E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45423551FC000C8BD2E /* SceneDelegate.swift */; };
 		459AA45D23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 459AA45B23551FC000C8BD2E /* RxSwift_Memo_Sample.xcdatamodeld */; };
@@ -67,6 +68,7 @@
 /* Begin PBXFileReference section */
 		451D9E0223F422AA009C1E19 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 		451D9E0423F422BC009C1E19 /* RxTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxTest.framework; path = Carthage/Build/iOS/RxTest.framework; sourceTree = "<group>"; };
+		451D9E0723F6CDEE009C1E19 /* MemoRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoRepository.swift; sourceTree = "<group>"; };
 		459AA44F23551FC000C8BD2E /* RxSwift-Memo-Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RxSwift-Memo-Sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		459AA45223551FC000C8BD2E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		459AA45423551FC000C8BD2E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +129,14 @@
 			children = (
 			);
 			path = Presentation;
+			sourceTree = "<group>";
+		};
+		451D9E0623F6CDD9009C1E19 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				451D9E0723F6CDEE009C1E19 /* MemoRepository.swift */,
+			);
+			path = Repository;
 			sourceTree = "<group>";
 		};
 		459AA44623551FC000C8BD2E = {
@@ -205,6 +215,7 @@
 		459AA48B23567D9A00C8BD2E /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				451D9E0623F6CDD9009C1E19 /* Repository */,
 				459AA4952358CFB600C8BD2E /* DataStore */,
 				459AA4942358CFB400C8BD2E /* Entity */,
 			);
@@ -434,6 +445,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				45F203C0238D788500B42831 /* UIView+Layout.swift in Sources */,
+				451D9E0823F6CDEE009C1E19 /* MemoRepository.swift in Sources */,
 				459AA48623567D6E00C8BD2E /* Memo+CoreDataClass.swift in Sources */,
 				459AA45323551FC000C8BD2E /* AppDelegate.swift in Sources */,
 				459AA48723567D6E00C8BD2E /* Memo+CoreDataProperties.swift in Sources */,
