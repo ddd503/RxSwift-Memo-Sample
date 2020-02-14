@@ -112,8 +112,9 @@ class MemoDataStoreTest: XCTestCase {
         XCTAssertEqual(readMemo.content, "コンテンツ1\nコンテンツ2")
 
         // メモを更新した上でreadして更新後の値を確認
-        let updateMemo = try! memoDataStore.updateMemo(memo: readMemo, text: "タイトル3\nコンテンツ3").flatMap { (_) -> Observable<Memo> in
-            return memoDataStore.readMemo(uniqueId: dummyUniqueId)
+        let updateMemo = try! memoDataStore.updateMemo(memo: readMemo, text: "タイトル3\nコンテンツ3")
+            .flatMap { (_) -> Observable<Memo> in
+                return memoDataStore.readMemo(uniqueId: dummyUniqueId)
         }
         .toBlocking()
         .first()!
@@ -122,24 +123,82 @@ class MemoDataStoreTest: XCTestCase {
         XCTAssertEqual(updateMemo.content, "コンテンツ3")
     }
 
-//    func test_deleteMemo_uniqueId指定でMemoが削除できること() {
-//        let memoDataStore = MemoDataStoreImpl()
-//        let dummyUniqueId1 = "1000"
-//        let dummyUniqueId2 = "2000"
-//        let dummyUniqueId3 = "3000"
-//        let newMemo1 = try! memoDataStore.createMemo(text: "メモ1").toBlocking().first()!
-//        newMemo1.uniqueId = dummyUniqueId1
-//        let newMemo2 = try! memoDataStore.createMemo(text: "メモ2").toBlocking().first()!
-//        newMemo2.uniqueId = dummyUniqueId2
-//        let newMemo3 = try! memoDataStore.createMemo(text: "メモ3").toBlocking().first()!
-//        newMemo3.uniqueId = dummyUniqueId3
-//
-//        // newMemo2を削除して全件取得する
-//        let ddd = memoDataStore.deleteMemo(uniqueId: dummyUniqueId2).toBlocking()
-//        let allMemo = try! memoDataStore.readAll().toBlocking().first()!
-//        XCTAssertEqual(allMemo.count, 2)
-//        XCTAssertFalse(allMemo.flatMap { $0.uniqueId }.contains(dummyUniqueId2), "削除したメモが全取得結果に含まれていないこと")
-//    }
+    func test_deleteAll_保存されているメモを全て削除できること() {
+        let memoDataStore = MemoDataStoreImpl()
+        let dummyUniqueId1 = "1000"
+        let dummyUniqueId2 = "2000"
+        let dummyUniqueId3 = "3000"
+        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
+        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
+        try! memoDataStore.createMemo(text: "メモ3", uniqueId: dummyUniqueId3).toBlocking().first()!
+
+        // 全件取得
+        let allMemoBeforeDeleteAll = try! memoDataStore.readAll().toBlocking().first()!
+
+        XCTAssertEqual(allMemoBeforeDeleteAll.count, 3)
+
+        // 全て削除
+        try! memoDataStore.deleteAll().toBlocking().first()!
+
+        // 全件取得
+        let allMemoAfterDeleteAll = try! memoDataStore.readAll().toBlocking().first()!
+
+        XCTAssertTrue(allMemoAfterDeleteAll.isEmpty)
+    }
+
+    func test_deleteMemo_uniqueId指定でMemoが削除できること() {
+        let memoDataStore = MemoDataStoreImpl()
+        let dummyUniqueId1 = "1000"
+        let dummyUniqueId2 = "2000"
+        let dummyUniqueId3 = "3000"
+        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
+        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
+        try! memoDataStore.createMemo(text: "メモ3", uniqueId: dummyUniqueId3).toBlocking().first()!
+
+        // 全件取得
+        let allMemoBeforeDelete = try! memoDataStore.readAll().toBlocking().first()!
+
+        XCTAssertEqual(allMemoBeforeDelete.count, 3)
+
+        // メモ2を削除
+        try! memoDataStore.deleteMemo(uniqueId: dummyUniqueId2).toBlocking().first()!
+
+        // 全件取得
+        let allMemoAfterDelete = try! memoDataStore.readAll().toBlocking().first()!
+
+        XCTAssertEqual(allMemoAfterDelete.count, 2)
+        XCTAssertFalse(allMemoAfterDelete.contains(where: { $0.uniqueId == dummyUniqueId2 }),
+                       "削除後の全件メモの中にメモ2のuniqueIDが含まれていないこと")
+    }
+
+    func test_countAll_メモ全件の総数を取得できること() {
+        let memoDataStore = MemoDataStoreImpl()
+        let memosCount = 200
+        (0..<memosCount).forEach {
+            try! memoDataStore.createMemo(text: "\($0)", uniqueId: "\($0)").toBlocking().first()!
+        }
+
+        let blocking1 = memoDataStore.countAll().toBlocking()
+        guard let allMemoCountFirst = try? blocking1.first() else {
+            XCTFail("メモ総数の取得に失敗")
+            return
+        }
+
+        XCTAssertEqual(allMemoCountFirst, memosCount)
+
+        let dummyUniqueId1 = "1000"
+        let dummyUniqueId2 = "2000"
+        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
+        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
+
+        let blocking2 = memoDataStore.countAll().toBlocking()
+        guard let allMemoCountSecond = try? blocking2.first() else {
+            XCTFail("メモ総数の取得に失敗")
+            return
+        }
+
+        XCTAssertEqual(allMemoCountSecond, memosCount + 2)
+    }
 
     private func deleteAllMemo() {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext

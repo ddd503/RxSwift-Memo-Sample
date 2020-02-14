@@ -96,13 +96,14 @@ struct MemoDataStoreImpl: MemoDataStore {
 
     func updateMemo(memo: Memo, text: String) -> Observable<Void> {
         guard let context = memo.managedObjectContext else { return Observable.never() }
-        return Observable.just(memo).map { (memo) in
-            context.performAndWait {
-                memo.title = text.firstLine
-                memo.content = text.afterSecondLine
-                memo.editDate = Date()
-                self.saveContext(context)
-            }
+        return Observable.just(memo)
+            .map { (memo) in
+                context.performAndWait {
+                    memo.title = text.firstLine
+                    memo.content = text.afterSecondLine
+                    memo.editDate = Date()
+                    self.saveContext(context)
+                }
         }
     }
 
@@ -111,19 +112,21 @@ struct MemoDataStoreImpl: MemoDataStore {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Memo")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
-        return Observable.just(deleteRequest).flatMap { (request) -> Observable<()> in
-            try context.execute(request)
-            return Observable.just(())
+        return Observable.just(deleteRequest)
+            .flatMap { (request) -> Observable<()> in
+                try context.execute(request)
+                return Observable.just(())
         }
     }
 
     func deleteMemo(uniqueId: String) -> Observable<Void> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        return readMemo(uniqueId: uniqueId).map { (memo) in
-            context.performAndWait {
-                context.delete(memo)
-                self.saveContext(context)
-            }
+        return readMemo(uniqueId: uniqueId)
+            .map { (memo) in
+                context.performAndWait {
+                    context.delete(memo)
+                    self.saveContext(context)
+                }
         }
     }
 
