@@ -18,28 +18,27 @@ protocol MemoDataStore {
 
     /// コンテキストを保存する
     /// - Parameter context: NSManagedObjectContext
-    /// - Returns: 保存完了通知
-    func save(context: NSManagedObjectContext) -> Observable<Notification>
+    func save(context: NSManagedObjectContext) -> Observable<Void>
 
     /// 条件に該当するオブジェクトの配列を取得する
     /// - Parameters:
     ///   - predicates: fetch条件
     ///   - sortKey: ソートキー
     ///   - ascending: 昇順 or 降順
+    ///   - logicalType: 複数条件指定時のフィルター方法
     /// - Returns: fetchした配列
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate],
                                         sortKey: String,
-                                        ascending: Bool) -> Observable<[T]>
+                                        ascending: Bool,
+                                        logicalType: NSCompoundPredicate.LogicalType) -> Observable<[T]>
 
     /// 任意のリクエスト(NSPersistentStoreRequest)を実行する
     /// - Parameter request: NSPersistentStoreRequest
-    /// - Returns: 実行完了通知
-    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Notification>
+    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void>
 
     /// 任意のオブジェクトを削除する
     /// - Parameter object: 削除するオブジェクト
-    /// - Returns: 削除完了通知
-    func delete<T: NSManagedObject>(object: T) -> Observable<Notification>
+    func delete<T: NSManagedObject>(object: T) -> Observable<Void>
 }
 
 struct MemoDataStoreImpl: MemoDataStore {
@@ -54,12 +53,13 @@ struct MemoDataStoreImpl: MemoDataStore {
 
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate],
                                         sortKey: String,
-                                        ascending: Bool) -> Observable<[T]> {
+                                        ascending: Bool,
+                                        logicalType: NSCompoundPredicate.LogicalType) -> Observable<[T]> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
+        guard let fetchRequest: NSFetchRequest<T> = T.fetchRequest() as? NSFetchRequest<T> else { return Observable.just([T]())}
         let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        fetchRequest.predicate = NSCompoundPredicate(type: logicalType, subpredicates: predicates)
 
         let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
                                                            managedObjectContext: context,
@@ -69,12 +69,12 @@ struct MemoDataStoreImpl: MemoDataStore {
         return Observable.just(resultsController)
             .flatMap { (fetchResultController) -> Observable<[T]> in
                 try fetchResultController.performFetch()
-                let objects = (fetchResultController.fetchedObjects as? [T]) ?? []
+                let objects = fetchResultController.fetchedObjects ?? []
                 return Observable.just(objects)
         }
     }
 
-    func save(context: NSManagedObjectContext) -> Observable<Notification> {
+    func save(context: NSManagedObjectContext) -> Observable<Void> {
         if context.hasChanges {
             do {
                 try context.save()
@@ -82,24 +82,24 @@ struct MemoDataStoreImpl: MemoDataStore {
                 return Observable.error(error)
             }
         }
-        return NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)
+        return Observable.just(())
     }
 
-    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Notification> {
+    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         do {
             try context.execute(request)
-            return save(context: context)
+            return Observable.just(())
         } catch {
             return Observable.error(error)
         }
     }
 
-    func delete<T: NSManagedObject>(object: T) -> Observable<Notification> {
+    func delete<T: NSManagedObject>(object: T) -> Observable<Void> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         context.performAndWait {
             context.delete(object)
         }
-        return save(context: context)
+        return Observable.just(())
     }
 }

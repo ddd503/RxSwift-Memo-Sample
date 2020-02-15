@@ -22,182 +22,114 @@ class MemoDataStoreTest: XCTestCase {
         deleteAllMemo()
     }
 
-    func test_createMemo_新規メモが作成できること() {
+    func test_create_任意のEntityを新規作成できること() {
         let memoDataStore = MemoDataStoreImpl()
-        let dummyUniqueId1 = "1000"
-        // 1件のメモを新規作成してからidでfetchする
-        let blocking = memoDataStore.createMemo(text: "タイトル1\nコンテンツ1\nコンテンツ2", uniqueId: dummyUniqueId1)
-            .flatMap { (_) -> Observable<Memo> in
-                return memoDataStore.readMemo(uniqueId: dummyUniqueId1)
-        }
-        .toBlocking()
+        let blocking = memoDataStore.create(entityName: "Memo").toBlocking()
 
-        guard let newMemo = try? blocking.first() else {
-            XCTFail("Memoの生成に失敗")
+        XCTAssertNoThrow(try blocking.first())
+
+        guard let object = try? blocking.first(), let memo = object as? Memo else {
+            XCTFail("作成したメモの取得に失敗")
             return
         }
-
-        XCTAssertNotNil(newMemo.uniqueId)
-        // 1行目がtitle、2行目以降がcontentであることも確認
-        XCTAssertEqual(newMemo.title, "タイトル1")
-        XCTAssertEqual(newMemo.content, "コンテンツ1\nコンテンツ2")
+        // 保存せずに消しておく
+        memo.managedObjectContext?.delete(memo)
     }
 
-    func test_createMemo_uniqueIdがユニークになっていること() {
+    func test_fetchArray_条件を指定してEntityの配列を取得できること() {
         let memoDataStore = MemoDataStoreImpl()
-        let createMemoCount = 100
-        var createMemos = [Memo]()
-        (0..<createMemoCount).forEach { i in
-            let newMemo = try! memoDataStore.createMemo(text: "\(i)", uniqueId: "\(i)")
-                .flatMap { (_) -> Observable<Memo> in
-                    return memoDataStore.readMemo(uniqueId: "\(i)")
-            }
-            .toBlocking()
-            .first()!
+        let entityName = "Memo"
+        let memo1 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+        memo1.title = "テスト1"
+        try! memoDataStore.save(context: memo1.managedObjectContext!).toBlocking().first()!
+        let memo2 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+        memo2.title = "テスト2"
+        try! memoDataStore.save(context: memo2.managedObjectContext!).toBlocking().first()!
+        let memo3 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+        memo3.title = "テスト3"
+        try! memoDataStore.save(context: memo3.managedObjectContext!).toBlocking().first()!
 
-            // 1件ごとのSaveはCreateがやってくれている
-            XCTAssertFalse(createMemos
-                .compactMap { $0.uniqueId }
-                .contains(newMemo.uniqueId!),
-                           "同じIDのメモが配列内にないこと")
-            createMemos.append(newMemo)
-        }
-    }
+        let predicate1 = NSPredicate(format: "title == %@", "テスト2")
+        let predicate2 = NSPredicate(format: "title == %@", "テスト3")
 
-    func test_readAll_保存されているMemoが全て取得できること() {
-        let memoDataStore = MemoDataStoreImpl()
-        let createMemoCount = 200
-        (0..<createMemoCount).forEach { i in
-            try! memoDataStore.createMemo(text: "\(i)", uniqueId: "\(i)")
-                .toBlocking()
-                .first()!
-        }
-        let blocking = memoDataStore.readAll().toBlocking()
-        guard let allMemo = try? blocking.first() else {
+        let blocking: BlockingObservable<[Memo]> = memoDataStore.fetchArray(predicates: [predicate1, predicate2],
+                                                                            sortKey: "editDate",
+                                                                            ascending: false,
+                                                                            logicalType: .or).toBlocking()
+        guard let fetchMemos = try? blocking.first() else {
             XCTFail("Memo配列の取得に失敗")
             return
         }
-        XCTAssertEqual(allMemo.count, createMemoCount)
+        XCTAssertEqual(fetchMemos.count, 2)
     }
 
-    func test_readMemo_uniqueId指定でMemoが取得できること() {
+    func test_excute_リクエストが実行されていること() {
         let memoDataStore = MemoDataStoreImpl()
-        let dummyUniqueId1 = "1000"
-        let dummyUniqueId2 = "2000"
-        let dummyUniqueId3 = "3000"
-        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ3", uniqueId: dummyUniqueId3).toBlocking().first()!
+        let entityName = "Memo"
+        let allMemosCount = 100
 
-        let blocking = memoDataStore.readMemo(uniqueId: dummyUniqueId2).toBlocking()
-        guard let memo = try? blocking.first() else {
-            XCTFail("ID指定でのメモ取得に失敗")
-            return
+        (0..<allMemosCount).forEach {
+            let memo = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+            memo.uniqueId = "\($0)"
+            try! memoDataStore.save(context: memo.managedObjectContext!).toBlocking().first()!
         }
-        XCTAssertEqual(memo.uniqueId, dummyUniqueId2)
-        XCTAssertEqual(memo.title, "メモ2")
-    }
 
-    func test_updateMemo_作成済みのメモの内容を更新できること() {
-        let memoDataStore = MemoDataStoreImpl()
-        let dummyUniqueId = "100"
-        try! memoDataStore.createMemo(text: "タイトル1\nコンテンツ1\nコンテンツ2",
-                                      uniqueId: dummyUniqueId)
+        let allMemosBeforeRequest: [Memo] = try! memoDataStore.fetchArray(predicates: [],
+                                                                          sortKey: "editDate",
+                                                                          ascending: false,
+                                                                          logicalType: .and) // predicateがない場合はandにしないと全件取れない
             .toBlocking()
             .first()!
+        XCTAssertEqual(allMemosBeforeRequest.count, allMemosCount, "削除実行前はallMemosCount分の要素があるはず")
 
-        // 新規作成したメモを取得（更新作業を行う）
-        let readMemo = try! memoDataStore.readMemo(uniqueId: dummyUniqueId).toBlocking().first()!
-        XCTAssertEqual(readMemo.title, "タイトル1")
-        XCTAssertEqual(readMemo.content, "コンテンツ1\nコンテンツ2")
+        // 削除リクエストの実行
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
-        // メモを更新した上でreadして更新後の値を確認
-        let updateMemo = try! memoDataStore.updateMemo(memo: readMemo, text: "タイトル3\nコンテンツ3")
-            .flatMap { (_) -> Observable<Memo> in
-                return memoDataStore.readMemo(uniqueId: dummyUniqueId)
-        }
-        .toBlocking()
-        .first()!
+        try! memoDataStore.excute(request: deleteRequest).toBlocking().first()!
 
-        XCTAssertEqual(updateMemo.title, "タイトル3")
-        XCTAssertEqual(updateMemo.content, "コンテンツ3")
+        // 削除後に再びfetchして全て消えているかを確認
+        let allMemosAfterRequest: [Memo] = try! memoDataStore.fetchArray(predicates: [],
+                                                                         sortKey: "editDate",
+                                                                         ascending: false,
+                                                                         logicalType: .and)
+            .toBlocking()
+            .first()!
+        XCTAssertEqual(allMemosAfterRequest.count, 0)
     }
 
-    func test_deleteAll_保存されているメモを全て削除できること() {
+    func test_delete_指定した1件のEntityを削除できること() {
         let memoDataStore = MemoDataStoreImpl()
-        let dummyUniqueId1 = "1000"
-        let dummyUniqueId2 = "2000"
-        let dummyUniqueId3 = "3000"
-        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ3", uniqueId: dummyUniqueId3).toBlocking().first()!
+        let entityName = "Memo"
+        let memo1 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+        memo1.uniqueId = "1"
+        try! memoDataStore.save(context: memo1.managedObjectContext!).toBlocking().first()!
+        let memo2 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+        memo2.uniqueId = "2"
+        try! memoDataStore.save(context: memo2.managedObjectContext!).toBlocking().first()!
+        let memo3 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
+        memo3.uniqueId = "3"
+        try! memoDataStore.save(context: memo3.managedObjectContext!).toBlocking().first()!
 
-        // 全件取得
-        let allMemoBeforeDeleteAll = try! memoDataStore.readAll().toBlocking().first()!
+        let allMemosBeforeDelete: [Memo] = try! memoDataStore.fetchArray(predicates: [],
+                                                                         sortKey: "editDate",
+                                                                         ascending: false,
+                                                                         logicalType: .and) // predicateがない場合はandにしないと全件取れない
+            .toBlocking()
+            .first()!
+        XCTAssertEqual(allMemosBeforeDelete.count, 3, "削除実行前は3つの要素があるはず")
 
-        XCTAssertEqual(allMemoBeforeDeleteAll.count, 3)
+        // memo2を削除
+        try! memoDataStore.delete(object: memo2).toBlocking().first()!
 
-        // 全て削除
-        try! memoDataStore.deleteAll().toBlocking().first()!
-
-        // 全件取得
-        let allMemoAfterDeleteAll = try! memoDataStore.readAll().toBlocking().first()!
-
-        XCTAssertTrue(allMemoAfterDeleteAll.isEmpty)
-    }
-
-    func test_deleteMemo_uniqueId指定でMemoが削除できること() {
-        let memoDataStore = MemoDataStoreImpl()
-        let dummyUniqueId1 = "1000"
-        let dummyUniqueId2 = "2000"
-        let dummyUniqueId3 = "3000"
-        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ3", uniqueId: dummyUniqueId3).toBlocking().first()!
-
-        // 全件取得
-        let allMemoBeforeDelete = try! memoDataStore.readAll().toBlocking().first()!
-
-        XCTAssertEqual(allMemoBeforeDelete.count, 3)
-
-        // メモ2を削除
-        try! memoDataStore.deleteMemo(uniqueId: dummyUniqueId2).toBlocking().first()!
-
-        // 全件取得
-        let allMemoAfterDelete = try! memoDataStore.readAll().toBlocking().first()!
-
-        XCTAssertEqual(allMemoAfterDelete.count, 2)
-        XCTAssertFalse(allMemoAfterDelete.contains(where: { $0.uniqueId == dummyUniqueId2 }),
-                       "削除後の全件メモの中にメモ2のuniqueIDが含まれていないこと")
-    }
-
-    func test_countAll_メモ全件の総数を取得できること() {
-        let memoDataStore = MemoDataStoreImpl()
-        let memosCount = 200
-        (0..<memosCount).forEach {
-            try! memoDataStore.createMemo(text: "\($0)", uniqueId: "\($0)").toBlocking().first()!
-        }
-
-        let blocking1 = memoDataStore.countAll().toBlocking()
-        guard let allMemoCountFirst = try? blocking1.first() else {
-            XCTFail("メモ総数の取得に失敗")
-            return
-        }
-
-        XCTAssertEqual(allMemoCountFirst, memosCount)
-
-        let dummyUniqueId1 = "1000"
-        let dummyUniqueId2 = "2000"
-        try! memoDataStore.createMemo(text: "メモ1", uniqueId: dummyUniqueId1).toBlocking().first()!
-        try! memoDataStore.createMemo(text: "メモ2", uniqueId: dummyUniqueId2).toBlocking().first()!
-
-        let blocking2 = memoDataStore.countAll().toBlocking()
-        guard let allMemoCountSecond = try? blocking2.first() else {
-            XCTFail("メモ総数の取得に失敗")
-            return
-        }
-
-        XCTAssertEqual(allMemoCountSecond, memosCount + 2)
+        let allMemosAfterDelete: [Memo] = try! memoDataStore.fetchArray(predicates: [],
+                                                                         sortKey: "editDate",
+                                                                         ascending: false,
+                                                                         logicalType: .and) // predicateがない場合はandにしないと全件取れない
+            .toBlocking()
+            .first()!
+        XCTAssertEqual(allMemosAfterDelete.count, 2, "削除実行後は要素数は2つのはず")
+        XCTAssertFalse(allMemosAfterDelete.contains(where: { $0.uniqueId == "2" }), "idが2のメモが含まれていないこと")
     }
 
     private func deleteAllMemo() {
