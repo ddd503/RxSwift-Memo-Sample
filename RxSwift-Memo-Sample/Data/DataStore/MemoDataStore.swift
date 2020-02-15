@@ -51,6 +51,17 @@ struct MemoDataStoreImpl: MemoDataStore {
         return Observable.just(object)
     }
 
+    func save(context: NSManagedObjectContext) -> Observable<Void> {
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                return Observable.error(error)
+            }
+        }
+        return Observable.just(())
+    }
+
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate],
                                         sortKey: String,
                                         ascending: Bool,
@@ -72,17 +83,6 @@ struct MemoDataStoreImpl: MemoDataStore {
                 let objects = fetchResultController.fetchedObjects ?? []
                 return Observable.just(objects)
         }
-    }
-
-    func save(context: NSManagedObjectContext) -> Observable<Void> {
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                return Observable.error(error)
-            }
-        }
-        return Observable.just(())
     }
 
     func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
