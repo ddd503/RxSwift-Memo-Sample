@@ -66,7 +66,7 @@ struct MemoRepositoryImpl: MemoRepository {
                             memo.content = text.afterSecondLine
                             memo.editDate = Date()
                         }
-                        return self.memoDataStore.saveContext(managedObjectContext).map { _ in }
+                        return self.memoDataStore.save(context: managedObjectContext).map { _ in }
                 }
         }
     }
@@ -95,7 +95,7 @@ struct MemoRepositoryImpl: MemoRepository {
                     memo.content = text.afterSecondLine
                     memo.editDate = Date()
                 }
-                return self.memoDataStore.saveContext(context).map { _ in }
+                return self.memoDataStore.save(context: context).map { _ in }
         }
     }
 
@@ -118,5 +118,4 @@ struct MemoRepositoryImpl: MemoRepository {
     func countAll() -> Observable<Int> {
         return readAll().map { $0.count }
     }
-
 }

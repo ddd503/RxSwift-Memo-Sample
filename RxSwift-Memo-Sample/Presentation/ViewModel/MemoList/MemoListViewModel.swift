@@ -14,7 +14,7 @@ final class MemoListViewModel: ViewModelType {
     private var memos = BehaviorRelay<[Memo]>(value: [])
 
     struct Input {
-        let memoDataStore: MemoDataStore
+        let memoRepository: MemoRepository
         let tableViewEditing: Driver<Bool>
         let tappedUnderRightButton: Signal<()>
         let deleteMemoAction: Driver<String>
@@ -42,7 +42,7 @@ final class MemoListViewModel: ViewModelType {
     }
     
     func injection(input: Input) -> Output {
-        let updateMemosAtStartUp = input.memoDataStore
+        let updateMemosAtStartUp = input.memoRepository
             .readAll()
             .flatMap { [weak self] (memos) -> Observable<()> in
                 self?.memos.accept(memos)
@@ -53,7 +53,7 @@ final class MemoListViewModel: ViewModelType {
         let updateMemosAtCompleteSaveMemo = NotificationCenter.default.rx
             .notification(.NSManagedObjectContextDidSave)
             .flatMap { (_) -> Observable<()> in
-                return input.memoDataStore
+                return input.memoRepository
                     .readAll()
                     .map { [weak self] (memos) in
                         self?.memos.accept(memos)
@@ -61,10 +61,10 @@ final class MemoListViewModel: ViewModelType {
         }
         .asDriver(onErrorDriveWith: Driver.never())
 
-        let updateMemosAtDeleteAllMemo = input.memoDataStore
-            .deleteAll()
+        let updateMemosAtDeleteAllMemo = input.memoRepository
+            .deleteAll(entityName: "Memo")
             .flatMap({ (_) -> Observable<()> in
-                return input.memoDataStore
+                return input.memoRepository
                     .readAll()
                     .map { [weak self] (memos) in
                         self?.memos.accept(memos)
@@ -74,7 +74,7 @@ final class MemoListViewModel: ViewModelType {
 
         let updateMemosAtDeleteMemo = input.deleteMemoAction
             .flatMap { (uniqueId) -> Driver<()> in
-                return input.memoDataStore
+                return input.memoRepository
                     .deleteMemo(uniqueId: uniqueId)
                     .asDriver(onErrorDriveWith: Driver.never())
         }

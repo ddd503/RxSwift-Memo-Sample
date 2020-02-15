@@ -14,7 +14,7 @@ import UIKit
 class MemoDetailViewModel: ViewModelType {
 
     struct Input {
-        let memoDataStore: MemoDataStore
+        let memoRepository: MemoRepository
         let tappedDoneButton: Signal<()>
         let textViewText: Driver<String>
     }
@@ -42,7 +42,7 @@ class MemoDetailViewModel: ViewModelType {
             // 既存メモの更新時
             setupText = Driver.just((memo.title ?? "") + "\n" + (memo.content ?? ""))
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText).flatMap({ (text) -> Driver<()> in
-                return input.memoDataStore
+                return input.memoRepository
                     .updateMemo(memo: memo, text: text)
                     .asDriver(onErrorDriveWith: Driver.never())
             })
@@ -50,7 +50,7 @@ class MemoDetailViewModel: ViewModelType {
             // 新規メモの作成時
             setupText = Driver.never()
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText).flatMap({ (text) -> Driver<()> in
-                return input.memoDataStore
+                return input.memoRepository
                     .createMemo(text: text, uniqueId: nil)
                     .asDriver(onErrorDriveWith: Driver.never())
             })

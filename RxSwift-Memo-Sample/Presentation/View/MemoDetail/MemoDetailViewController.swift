@@ -33,7 +33,7 @@ class MemoDetailViewController: UIViewController {
         textView.becomeFirstResponder()
 
         let viewModelOutput =
-            viewModel.injection(input: MemoDetailViewModel.Input(memoDataStore: MemoDataStoreImpl(),
+            viewModel.injection(input: MemoDetailViewModel.Input(memoRepository: MemoRepositoryImpl(memoDataStore: MemoDataStoreImpl()),
                                                                  tappedDoneButton: doneButtonItem.rx.tap.asSignal(),
                                                                  textViewText: textView.rx.text.orEmpty.asDriver()))
 

@@ -30,20 +30,20 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         navigationItem.rightBarButtonItem = editButtonItem
 
         let viewModelOutput =
-            viewModel.injection(input: MemoListViewModel.Input(memoDataStore: MemoDataStoreImpl(),
+            viewModel.injection(input: MemoListViewModel.Input(memoRepository: MemoRepositoryImpl(memoDataStore: MemoDataStoreImpl()),
                                                                tableViewEditing: tableViewEditing.asDriver(onErrorDriveWith: Driver.never()),
                                                                tappedUnderRightButton: underRightButton.rx.tap.asSignal(),
                                                                deleteMemoAction: tableView.rx.modelDeleted(Memo.self).compactMap { $0.uniqueId }.asDriver(onErrorDriveWith: Driver.never())))
         viewModelOutput.updateMemoList
-        .drive(onNext: { [weak self] memos in
-            self?.tableView.reloadData()
-            self?.countLabel.text = memos.isEmpty ? "メモなし" : "\(memos.count)件のメモ"
-            self?.emptyLabel.isHidden = !memos.isEmpty
-            if memos.isEmpty {
-                self?.setEditing(false, animated: true)
-            }
-        })
-        .disposed(by: disposeBag)
+            .drive(onNext: { [weak self] memos in
+                self?.tableView.reloadData()
+                self?.countLabel.text = memos.isEmpty ? "メモなし" : "\(memos.count)件のメモ"
+                self?.emptyLabel.isHidden = !memos.isEmpty
+                if memos.isEmpty {
+                    self?.setEditing(false, animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtStartUp
             .drive()

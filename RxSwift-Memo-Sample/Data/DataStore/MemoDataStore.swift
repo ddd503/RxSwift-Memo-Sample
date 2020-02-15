@@ -11,49 +11,39 @@ import RxSwift
 import RxCocoa
 
 protocol MemoDataStore {
-    /// 新規メモを作成する
-    /// - Parameters:
-    ///   - text: メモ内容
-    ///   - uniqueId: 新規メモに割り当てるユニークID（nilの場合は全件+1がID）
-    func createMemo(text: String, uniqueId: String?) -> Observable<Void>
-
-    /// 全メモを取得する
-    func readAll() -> Observable<[Memo]>
-
-    /// ID指定でメモを1件取得する
-    /// - Parameter uniqueId: ユニークID
-    func readMemo(uniqueId: String) -> Observable<Memo?>
-
-    /// メモを更新する
-    /// - Parameters:
-    ///   - memo: 更新するメモ
-    ///   - text: 更新内容
-    func updateMemo(memo: Memo, text: String) -> Observable<Void>
-
-    /// 全メモを削除する
-    func deleteAll() -> Observable<Void>
-
-    /// ID指定でメモを削除する
-    /// - Parameter uniqueId: ユニークID
-    func deleteMemo(uniqueId: String) -> Observable<Void>
-    
-    /// 全メモ件数を取得する
-    func countAll() -> Observable<Int>
-
-
+    /// 任意のEntityを新規作成する
+    /// - Parameter entityName: 新規作成するEntity名
+    /// - Returns: 作成したEntity
     func create<T: NSManagedObject>(entityName: String) -> Observable<T?>
-    func saveContext (_ context: NSManagedObjectContext)
+
+    /// コンテキストを保存する
+    /// - Parameter context: NSManagedObjectContext
+    /// - Returns: 保存完了通知
+    func save(context: NSManagedObjectContext) -> Observable<Notification>
+
+    /// 条件に該当するオブジェクトの配列を取得する
+    /// - Parameters:
+    ///   - predicates: fetch条件
+    ///   - sortKey: ソートキー
+    ///   - ascending: 昇順 or 降順
+    /// - Returns: fetchした配列
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate],
                                         sortKey: String,
                                         ascending: Bool) -> Observable<[T]>
-}
 
-enum MemoDataStoreError: Error {
-    case notFoundFetchedMemos
-    case empty
+    /// 任意のリクエスト(NSPersistentStoreRequest)を実行する
+    /// - Parameter request: NSPersistentStoreRequest
+    /// - Returns: 実行完了通知
+    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Notification>
+
+    /// 任意のオブジェクトを削除する
+    /// - Parameter object: 削除するオブジェクト
+    /// - Returns: 削除完了通知
+    func delete<T: NSManagedObject>(object: T) -> Observable<Notification>
 }
 
 struct MemoDataStoreImpl: MemoDataStore {
+
     func create<T: NSManagedObject>(entityName: String) -> Observable<T?> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)
@@ -64,7 +54,7 @@ struct MemoDataStoreImpl: MemoDataStore {
 
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate],
                                         sortKey: String,
-                                        ascending: Bool = false) -> Observable<[T]> {
+                                        ascending: Bool) -> Observable<[T]> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<Memo> = Memo.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
@@ -84,85 +74,32 @@ struct MemoDataStoreImpl: MemoDataStore {
         }
     }
 
-
-
-
-
-    func createMemo(text: String, uniqueId: String?) -> Observable<Void> {
-        let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        let entity = NSEntityDescription.entity(forEntityName: "Memo", in: context)
-        return countAll()
-            .map { (memosCount) in
-                guard let entity = entity else { return }
-                let memo = Memo(entity: entity, insertInto: context)
-                context.performAndWait {
-                    memo.uniqueId = uniqueId ?? "\(memosCount + 1)"
-                    memo.title = text.firstLine
-                    memo.content = text.afterSecondLine
-                    memo.editDate = Date()
-                    self.saveContext(context)
-                }
-        }
-    }
-
-    func readAll() -> Observable<[Memo]> {
-        let allMemos: Observable<[Memo]> = fetchArray(predicates: [], sortKey: "editDate")
-        return allMemos
-    }
-
-    func readMemo(uniqueId: String) -> Observable<Memo?> {
-        let fetchMemos: Observable<[Memo]> = fetchArray(predicates: [NSPredicate(format: "uniqueId == %@", uniqueId)], sortKey: "editDate")
-        return fetchMemos.map { $0.first }
-    }
-
-    func updateMemo(memo: Memo, text: String) -> Observable<Void> {
-        guard let context = memo.managedObjectContext else { return Observable.never() }
-        return Observable.just(memo)
-            .map { (memo) in
-                context.performAndWait {
-                    memo.title = text.firstLine
-                    memo.content = text.afterSecondLine
-                    memo.editDate = Date()
-                    self.saveContext(context)
-                }
-        }
-    }
-
-    func deleteAll() -> Observable<Void> {
-        let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Memo")
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-
-        return Observable.just(deleteRequest)
-            .flatMap { (request) -> Observable<()> in
-                try context.execute(request)
-                return Observable.just(())
-        }
-    }
-
-    func deleteMemo(uniqueId: String) -> Observable<Void> {
-        let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        return readMemo(uniqueId: uniqueId)
-            .map { (memo) in
-                context.performAndWait {
-                    context.delete(memo)
-                    self.saveContext(context)
-                }
-        }
-    }
-
-    func countAll() -> Observable<Int> {
-        return fetchMemo(predicates: [], sortKey: "editDate").map { $0.count }
-    }
-
-    func saveContext (_ context: NSManagedObjectContext) {
+    func save(context: NSManagedObjectContext) -> Observable<Notification> {
         if context.hasChanges {
             do {
                 try context.save()
             } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                return Observable.error(error)
             }
         }
+        return NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)
+    }
+
+    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Notification> {
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
+        do {
+            try context.execute(request)
+            return save(context: context)
+        } catch {
+            return Observable.error(error)
+        }
+    }
+
+    func delete<T: NSManagedObject>(object: T) -> Observable<Notification> {
+        let context = CoreDataPropaties.shared.persistentContainer.viewContext
+        context.performAndWait {
+            context.delete(object)
+        }
+        return save(context: context)
     }
 }
