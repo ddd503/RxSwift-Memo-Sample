@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 import RxSwift
 
 protocol MemoRepository {
@@ -30,7 +31,7 @@ protocol MemoRepository {
     func updateMemo(memo: Memo, text: String) -> Observable<Void>
 
     /// 全メモを削除する
-    func deleteAll() -> Observable<Void>
+    func deleteAll(entityName: String) -> Observable<Void>
 
     /// ID指定でメモを削除する
     /// - Parameter uniqueId: ユニークID
@@ -50,45 +51,72 @@ struct MemoRepositoryImpl: MemoRepository {
 
     func createMemo(text: String, uniqueId: String?) -> Observable<Void> {
 
-        let createMemo: Observable<Memo?> = memoDataStore.createMemo(entityName: "Memo")
+        let createMemo: Observable<Memo?> = memoDataStore.create(entityName: "Memo")
 
         return createMemo
             .flatMap { (memo) -> Observable<Void> in
-                guard let memo = memo, let managedObjectContext = memo.managedObjectContext else { return Observable.never() }
-                return self.memoDataStore.countAll().map { (allMemoCount) in
-                    managedObjectContext.performAndWait {
-                        memo.uniqueId = uniqueId ?? "\(allMemoCount + 1)"
-                        memo.title = text.firstLine
-                        memo.content = text.afterSecondLine
-                        memo.editDate = Date()
-                        self.memoDataStore.saveContext(managedObjectContext)
-                    }
+                guard let memo = memo,
+                    let managedObjectContext = memo.managedObjectContext else { return Observable.empty() }
+
+                return self.countAll()
+                    .flatMap { (allMemoCount) -> Observable<Void> in
+                        managedObjectContext.performAndWait {
+                            memo.uniqueId = uniqueId ?? "\(allMemoCount + 1)"
+                            memo.title = text.firstLine
+                            memo.content = text.afterSecondLine
+                            memo.editDate = Date()
+                        }
+                        return self.memoDataStore.saveContext(managedObjectContext).map { _ in }
                 }
         }
     }
 
     func readAll() -> Observable<[Memo]> {
-        return Observable.never()
+        let allMemos: Observable<[Memo]> = memoDataStore.fetchArray(predicates: [],
+                                                                    sortKey: "editDate",
+                                                                    ascending: false)
+        return allMemos
     }
 
     func readMemo(uniqueId: String) -> Observable<Memo?> {
-        return Observable.never()
+        let fetchResult: Observable<[Memo]> =
+            memoDataStore.fetchArray(predicates: [NSPredicate(format: "uniqueId == %@", uniqueId)],
+                                     sortKey: "editDate",
+                                     ascending: false)
+        return fetchResult.map { $0.first }
     }
 
     func updateMemo(memo: Memo, text: String) -> Observable<Void> {
-        return Observable.never()
+        return Observable.just(memo.managedObjectContext)
+            .flatMap { (context) -> Observable<Void> in
+                guard let context = context else { return Observable.empty() }
+                context.performAndWait {
+                    memo.title = text.firstLine
+                    memo.content = text.afterSecondLine
+                    memo.editDate = Date()
+                }
+                return self.memoDataStore.saveContext(context).map { _ in }
+        }
     }
 
-    func deleteAll() -> Observable<Void> {
-        return Observable.never()
+    func deleteAll(entityName: String) -> Observable<Void> {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        let result = memoDataStore.excute(request: deleteRequest)
+        return result.map { _ in }
     }
 
     func deleteMemo(uniqueId: String) -> Observable<Void> {
-        return Observable.never()
+        return readMemo(uniqueId: uniqueId)
+            .flatMap { (memo) -> Observable<Void> in
+                guard let memo = memo else { return Observable.empty() }
+                let deleteOperation: Observable<Notification> = self.memoDataStore.delete(object: memo)
+                return deleteOperation.map { _ in }
+        }
     }
 
     func countAll() -> Observable<Int> {
-        return Observable.never()
+        return readAll().map { $0.count }
     }
 
 }
