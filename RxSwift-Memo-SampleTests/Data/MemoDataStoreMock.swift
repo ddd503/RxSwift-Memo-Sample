@@ -27,8 +27,13 @@ class MemoDataStoreMock: MemoDataStore {
         let fetchResult = (dummyDataBase as NSArray).filtered(using: predicate) as! [T]
         return Observable.just(fetchResult)
     }
-    
+
     func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
+        if let deleteRequest = request as? NSBatchDeleteRequest,
+            let entityName = deleteRequest.fetchRequest.entityName,
+            entityName == "Memo" {
+            dummyDataBase = []
+        }
         return Observable.just(())
     }
 
