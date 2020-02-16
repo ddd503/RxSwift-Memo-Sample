@@ -18,6 +18,7 @@ final class MemoListViewModel: ViewModelType {
         let tableViewEditing: Driver<Bool>
         let tappedUnderRightButton: Signal<()>
         let deleteMemoAction: Driver<String>
+        let showActionSheet: Driver<AlertEvent>
     }
 
     struct Output {
@@ -61,16 +62,29 @@ final class MemoListViewModel: ViewModelType {
         }
         .asDriver(onErrorDriveWith: Driver.never())
 
-        let updateMemosAtDeleteAllMemo = input.memoRepository
-            .deleteAll(entityName: "Memo")
-            .flatMap({ (_) -> Observable<()> in
-                return input.memoRepository
-                    .readAll()
-                    .map { [weak self] (memos) in
-                        self?.memos.accept(memos)
+        let updateMemosAtDeleteAllMemo = input.tappedUnderRightButton
+            .withLatestFrom(input.tableViewEditing)
+            .flatMap { (isEditing) -> Driver<Void> in
+                guard isEditing else { return Driver.just(()) }
+                return input.showActionSheet
+                    .flatMap { (event) -> Driver<Void> in
+                        switch event.actionType {
+                        case .allDelete:
+                            return input.memoRepository
+                                .deleteAll(entityName: "Memo")
+                                .flatMap { (_) -> Observable<Void> in
+                                    return input.memoRepository
+                                        .readAll()
+                                        .map { [weak self] (memos) in
+                                            self?.memos.accept(memos)
+                                    }
+                            }
+                            .asDriver(onErrorDriveWith: Driver.empty())
+                        case .cancel:
+                            return Driver.empty()
+                        }
                 }
-            })
-            .asDriver(onErrorDriveWith: Driver.never())
+        }
 
         let updateMemosAtDeleteMemo = input.deleteMemoAction
             .flatMap { (uniqueId) -> Driver<()> in

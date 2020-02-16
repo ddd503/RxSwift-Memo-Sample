@@ -28,12 +28,19 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = editButtonItem
-
+        
+        let showActionSheet = showAlertObservable(title: nil, message: nil,
+                                                  style: .actionSheet,
+                                                  actions: [AlertActionType.allDelete.event,
+                                                            AlertActionType.cancel.event])
+            .asDriver(onErrorDriveWith: Driver.never())
+        
         let viewModelOutput =
             viewModel.injection(input: MemoListViewModel.Input(memoRepository: MemoRepositoryImpl(memoDataStore: MemoDataStoreImpl()),
-                                                               tableViewEditing: tableViewEditing.asDriver(onErrorDriveWith: Driver.never()),
+                                                               tableViewEditing: tableViewEditing.asDriver(onErrorDriveWith: Driver.empty()),
                                                                tappedUnderRightButton: underRightButton.rx.tap.asSignal(),
-                                                               deleteMemoAction: tableView.rx.modelDeleted(Memo.self).compactMap { $0.uniqueId }.asDriver(onErrorDriveWith: Driver.never())))
+                                                               deleteMemoAction: tableView.rx.modelDeleted(Memo.self).compactMap { $0.uniqueId }.asDriver(onErrorDriveWith: Driver.empty()),
+                                                               showActionSheet: showActionSheet))
         viewModelOutput.updateMemoList
             .drive(onNext: { [weak self] memos in
                 self?.tableView.reloadData()
@@ -44,76 +51,56 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
                 }
             })
             .disposed(by: disposeBag)
-
+        
         viewModelOutput.updateMemosAtStartUp
             .drive()
             .disposed(by: disposeBag)
-
+        
         viewModelOutput.updateMemosAtCompleteSaveMemo
             .drive()
             .disposed(by: disposeBag)
-
+        
+        viewModelOutput.updateMemosAtDeleteAllMemo
+            .drive()
+            .disposed(by: disposeBag)
+        
         viewModelOutput.updateMemosAtDeleteMemo
             .drive()
             .disposed(by: disposeBag)
-
+        
         viewModelOutput.transitionCreateMemo
             .drive(onNext: { [weak self] in
                 self?.transitionDetailMemoVC()
             })
             .disposed(by: disposeBag)
-
+        
         viewModelOutput.updateButtonTitle
             .drive(onNext: { [weak self] buttonTitle in
                 self?.underRightButton.setTitle(buttonTitle, for: .normal)
             })
             .disposed(by: disposeBag)
-
-        viewModelOutput.showAllDeleteAlert
-            .drive(onNext: { [weak self] (_) in
-                guard let self = self else { return }
-                let allDelete = ObservableAlertAction(title: "すべて削除",
-                                                      style: .destructive) {
-                                                        viewModelOutput.updateMemosAtDeleteAllMemo
-                                                            .drive(onNext: { [weak self]  in
-                                                                // アニメーション入れるならIndexPathで更新かける
-                                                                self?.setEditing(false, animated: true)
-                                                            })
-                                                            .disposed(by: self.disposeBag)
-                }
-                let cancel = ObservableAlertAction(title: "キャンセル",
-                                                   style: .cancel, task: nil)
-
-                self.showAlert(title: nil, message: nil,
-                               style: .actionSheet, actions: [allDelete, cancel])
-                    .subscribe(onNext: { action in
-                        action.task?()
-                    })
-                    .disposed(by: self.disposeBag)
-            })
-            .disposed(by: disposeBag)
-
+        
         viewModelOutput.listDataSource
             .bind(to: tableView.rx.items(cellIdentifier: MemoInfoCell.identifier,
                                          cellType: MemoInfoCell.self)) { (row, element, cell) in
                                             cell.setInfo(memo: element)
         }
         .disposed(by: disposeBag)
-
+        
         /// テーブルビューのセルタップ時
         tableView.rx.modelSelected(Memo.self)
             .subscribe(onNext: { [weak self] memo in
                 self?.transitionDetailMemoVC(memo: memo)
             })
             .disposed(by: disposeBag)
-
+        
         /// テーブルビューの編集モード切り替え時
         tableViewEditing.asDriver()
             .drive(onNext: { [weak self] isEditing in
                 self?.tableView.isEditing = isEditing
             })
             .disposed(by: disposeBag)
-
+        
         /// 画面遷移後
         navigationController?.rx
             .didShow
@@ -130,7 +117,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         super.setEditing(editing, animated: animated)
         tableViewEditing.accept(editing)
     }
-
+    
     /// メモ作成画面　or メモ編集画面に遷移（Memoを渡した場合はその情報を基に詳細画面を開き、渡さない場合は新規作成画面を開く）
     /// - Parameter memo: Memo
     private func transitionDetailMemoVC(memo: Memo? = nil) {
