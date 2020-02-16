@@ -32,6 +32,7 @@ class MemoDataStoreMock: MemoDataStore {
         if let deleteRequest = request as? NSBatchDeleteRequest,
             let entityName = deleteRequest.fetchRequest.entityName,
             entityName == "Memo" {
+            // Memo全削除時
             dummyDataBase = []
         }
         return Observable.just(())

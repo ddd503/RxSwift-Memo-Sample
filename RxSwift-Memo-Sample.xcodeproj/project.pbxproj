@@ -147,6 +147,31 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
+		4533617223F94CF300167248 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				4533617023F8945900167248 /* MemoMock.swift */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		4533617323F94CF600167248 /* DataStore */ = {
+			isa = PBXGroup;
+			children = (
+				459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */,
+				4533616E23F8685400167248 /* MemoDataStoreMock.swift */,
+			);
+			path = DataStore;
+			sourceTree = "<group>";
+		};
+		4533617423F94CF900167248 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				451D9E0B23F793E2009C1E19 /* MemoRepositoryTest.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
 		459AA44623551FC000C8BD2E = {
 			isa = PBXGroup;
 			children = (
@@ -252,10 +277,9 @@
 		459AA498235AB03200C8BD2E /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				459AA499235AB04900C8BD2E /* MemoDataStoreTest.swift */,
-				451D9E0B23F793E2009C1E19 /* MemoRepositoryTest.swift */,
-				4533616E23F8685400167248 /* MemoDataStoreMock.swift */,
-				4533617023F8945900167248 /* MemoMock.swift */,
+				4533617423F94CF900167248 /* Repository */,
+				4533617323F94CF600167248 /* DataStore */,
+				4533617223F94CF300167248 /* Entity */,
 			);
 			path = Data;
 			sourceTree = "<group>";
