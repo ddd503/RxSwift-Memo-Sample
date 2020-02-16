@@ -41,13 +41,13 @@ class MemoDataStoreTest: XCTestCase {
         let entityName = "Memo"
         let memo1 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
         memo1.title = "テスト1"
-        try! memoDataStore.save(context: memo1.managedObjectContext!).toBlocking().first()!
+        memoDataStore.save(context: memo1.managedObjectContext!)
         let memo2 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
         memo2.title = "テスト2"
-        try! memoDataStore.save(context: memo2.managedObjectContext!).toBlocking().first()!
+        memoDataStore.save(context: memo2.managedObjectContext!)
         let memo3 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
         memo3.title = "テスト3"
-        try! memoDataStore.save(context: memo3.managedObjectContext!).toBlocking().first()!
+        memoDataStore.save(context: memo3.managedObjectContext!)
 
         let predicate1 = NSPredicate(format: "title == %@", "テスト2")
         let predicate2 = NSPredicate(format: "title == %@", "テスト3")
@@ -71,7 +71,7 @@ class MemoDataStoreTest: XCTestCase {
         (0..<allMemosCount).forEach {
             let memo = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
             memo.uniqueId = "\($0)"
-            try! memoDataStore.save(context: memo.managedObjectContext!).toBlocking().first()!
+            memoDataStore.save(context: memo.managedObjectContext!)
         }
 
         let allMemosBeforeRequest: [Memo] = try! memoDataStore.fetchArray(predicates: [],
@@ -103,13 +103,13 @@ class MemoDataStoreTest: XCTestCase {
         let entityName = "Memo"
         let memo1 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
         memo1.uniqueId = "1"
-        try! memoDataStore.save(context: memo1.managedObjectContext!).toBlocking().first()!
+        memoDataStore.save(context: memo1.managedObjectContext!)
         let memo2 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
         memo2.uniqueId = "2"
-        try! memoDataStore.save(context: memo2.managedObjectContext!).toBlocking().first()!
+        memoDataStore.save(context: memo2.managedObjectContext!)
         let memo3 = try! memoDataStore.create(entityName: entityName).toBlocking().first()! as! Memo
         memo3.uniqueId = "3"
-        try! memoDataStore.save(context: memo3.managedObjectContext!).toBlocking().first()!
+        memoDataStore.save(context: memo3.managedObjectContext!)
 
         let allMemosBeforeDelete: [Memo] = try! memoDataStore.fetchArray(predicates: [],
                                                                          sortKey: "editDate",

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 @testable import RxSwift_Memo_Sample
 
 class MemoMock: Memo {
@@ -25,22 +26,27 @@ class MemoMock: Memo {
     }
 
     override var uniqueId: String? {
-        set {}
+        set { id = newValue ?? "" }
         get { return self.id }
     }
 
     override var title: String? {
-        set {}
+        set { self.titleText = newValue ?? "" }
         get { return self.titleText }
     }
 
     override var content: String? {
-        set {}
+        set { self.contentText = newValue ?? "" }
         get { return self.contentText }
     }
 
     override var editDate: Date? {
-        set {}
+        set { self.editMemoDate = newValue }
         get { return self.editMemoDate }
+    }
+
+    override var managedObjectContext: NSManagedObjectContext? {
+        set {}
+        get { return NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType) }
     }
 }

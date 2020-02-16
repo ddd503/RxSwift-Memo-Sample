@@ -15,7 +15,7 @@ protocol MemoRepository {
     /// - Parameters:
     ///   - text: メモ内容
     ///   - uniqueId: 新規メモに割り当てるユニークID（nilの場合は全件+1がID）
-    func createMemo(text: String, uniqueId: String?) -> Observable<Void>
+    func createMemo(text: String, uniqueId: String?) -> Observable<Memo>
 
     /// 全メモを取得する
     func readAll() -> Observable<[Memo]>
@@ -49,24 +49,22 @@ struct MemoRepositoryImpl: MemoRepository {
         self.memoDataStore = memoDataStore
     }
 
-    func createMemo(text: String, uniqueId: String?) -> Observable<Void> {
-
+    func createMemo(text: String, uniqueId: String?) -> Observable<Memo> {
         let createMemo: Observable<Memo?> = memoDataStore.create(entityName: "Memo")
-
         return createMemo
-            .flatMap { (memo) -> Observable<Void> in
+            .flatMap { (memo) -> Observable<Memo> in
                 guard let memo = memo,
                     let managedObjectContext = memo.managedObjectContext else { return Observable.empty() }
-
                 return self.countAll()
-                    .flatMap { (allMemoCount) -> Observable<Void> in
+                    .map { (allMemoCount) in
                         managedObjectContext.performAndWait {
                             memo.uniqueId = uniqueId ?? "\(allMemoCount + 1)"
                             memo.title = text.firstLine
                             memo.content = text.afterSecondLine
                             memo.editDate = Date()
+                            self.memoDataStore.save(context: managedObjectContext)
                         }
-                        return self.memoDataStore.save(context: managedObjectContext)
+                        return memo
                 }
         }
     }
@@ -96,8 +94,9 @@ struct MemoRepositoryImpl: MemoRepository {
                     memo.title = text.firstLine
                     memo.content = text.afterSecondLine
                     memo.editDate = Date()
+                    self.memoDataStore.save(context: context)
                 }
-                return self.memoDataStore.save(context: context)
+                return Observable.just(())
         }
     }
 

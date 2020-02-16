@@ -53,7 +53,7 @@ class MemoDetailViewModel: ViewModelType {
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText)
                 .flatMap({ (text) -> Driver<()> in
                     return input.memoRepository
-                        .createMemo(text: text, uniqueId: nil)
+                        .createMemo(text: text, uniqueId: nil).map {_ in }
                         .asDriver(onErrorDriveWith: Driver.never())
                 })
         }

@@ -18,7 +18,8 @@ protocol MemoDataStore {
 
     /// コンテキストを保存する
     /// - Parameter context: NSManagedObjectContext
-    func save(context: NSManagedObjectContext) -> Observable<Void>
+    @discardableResult
+    func save(context: NSManagedObjectContext) -> Result<Void, Error>
 
     /// 条件に該当するオブジェクトの配列を取得する
     /// - Parameters:
@@ -51,15 +52,16 @@ struct MemoDataStoreImpl: MemoDataStore {
         return Observable.just(object)
     }
 
-    func save(context: NSManagedObjectContext) -> Observable<Void> {
+    @discardableResult
+    func save(context: NSManagedObjectContext) -> Result<Void, Error> {
         if context.hasChanges {
             do {
                 try context.save()
             } catch {
-                return Observable.error(error)
+                return .failure(error)
             }
         }
-        return Observable.just(())
+        return .success(())
     }
 
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate],
