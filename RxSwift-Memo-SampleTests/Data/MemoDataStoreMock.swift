@@ -13,7 +13,6 @@ import RxSwift
 class MemoDataStoreMock: MemoDataStore {
 
     var dummyDataBase: [Memo] = []
-
     func create<T: NSManagedObject>(entityName: String) -> Observable<T?> {
         let memoMock = MemoMock()
         return Observable.just(memoMock as? T)
@@ -24,9 +23,11 @@ class MemoDataStoreMock: MemoDataStore {
     }
 
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate], sortKey: String, ascending: Bool, logicalType: NSCompoundPredicate.LogicalType) -> Observable<[T]> {
-        return Observable.just(dummyDataBase as! [T])
+        let predicate = NSCompoundPredicate(type: logicalType, subpredicates: predicates)
+        let fetchResult = (dummyDataBase as NSArray).filtered(using: predicate) as! [T]
+        return Observable.just(fetchResult)
     }
-
+    
     func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
         return Observable.just(())
     }
