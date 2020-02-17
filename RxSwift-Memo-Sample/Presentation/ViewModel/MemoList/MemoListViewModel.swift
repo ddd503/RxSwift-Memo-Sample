@@ -19,6 +19,7 @@ final class MemoListViewModel: ViewModelType {
         let tappedUnderRightButton: Signal<()>
         let deleteMemoAction: Driver<String>
         let showActionSheet: Driver<AlertEvent>
+        let didSaveMemo: Observable<Notification>
     }
 
     struct Output {
@@ -34,8 +35,6 @@ final class MemoListViewModel: ViewModelType {
         let updateMemosAtDeleteMemo: Driver<()>
         /// 新規作成画面への遷移
         let transitionCreateMemo: Driver<()>
-        /// 全削除アラートの表示
-        let showAllDeleteAlert: Driver<()>
         /// リスト表示するデータソース
         let listDataSource: BehaviorRelay<[Memo]>
         /// ボタンタイトルの更新
@@ -43,6 +42,7 @@ final class MemoListViewModel: ViewModelType {
     }
     
     func injection(input: Input) -> Output {
+        // 基本的にはトリガースタートの方が良い(この定義方法だと宣言時から走るため購読時からではない)
         let updateMemosAtStartUp = input.memoRepository
             .readAll()
             .flatMap { [weak self] (memos) -> Observable<()> in
@@ -51,8 +51,7 @@ final class MemoListViewModel: ViewModelType {
         }
         .asDriver(onErrorDriveWith: Driver.never())
 
-        let updateMemosAtCompleteSaveMemo = NotificationCenter.default.rx
-            .notification(.NSManagedObjectContextDidSave)
+        let updateMemosAtCompleteSaveMemo = input.didSaveMemo
             .flatMap { (_) -> Observable<()> in
                 return input.memoRepository
                     .readAll()
@@ -90,6 +89,13 @@ final class MemoListViewModel: ViewModelType {
             .flatMap { (uniqueId) -> Driver<()> in
                 return input.memoRepository
                     .deleteMemo(uniqueId: uniqueId)
+                    .flatMap({ (_) -> Observable<Void> in
+                        return input.memoRepository
+                            .readAll()
+                            .map { [weak self] (memos) in
+                                self?.memos.accept(memos)
+                        }
+                    })
                     .asDriver(onErrorDriveWith: Driver.never())
         }
 
@@ -97,12 +103,6 @@ final class MemoListViewModel: ViewModelType {
             .withLatestFrom(input.tableViewEditing)
             .flatMap { (isEditing) -> Driver<()> in
                 return isEditing ? Driver.never() : Driver.just(())
-        }
-
-        let showAllDeleteAlert = input.tappedUnderRightButton
-            .withLatestFrom(input.tableViewEditing)
-            .flatMap { (isEditing) -> Driver<()> in
-                return isEditing ? Driver.just(()) : Driver.never()
         }
 
         let updateButtonTitle = input.tableViewEditing
@@ -116,7 +116,6 @@ final class MemoListViewModel: ViewModelType {
                       updateMemosAtDeleteAllMemo: updateMemosAtDeleteAllMemo,
                       updateMemosAtDeleteMemo: updateMemosAtDeleteMemo,
                       transitionCreateMemo: transitionCreateMemo,
-                      showAllDeleteAlert: showAllDeleteAlert,
                       listDataSource: self.memos,
                       updateButtonTitle: updateButtonTitle)
     }
