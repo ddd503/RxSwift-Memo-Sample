@@ -168,7 +168,6 @@ class MemoRepositoryTest: XCTestCase {
             XCTFail("全件総数の取得に失敗")
             return
         }
-
         XCTAssertEqual(memosCount, allMemosCount)
     }
 }

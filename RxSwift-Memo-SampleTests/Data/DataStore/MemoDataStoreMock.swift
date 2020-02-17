@@ -13,6 +13,7 @@ import RxSwift
 class MemoDataStoreMock: MemoDataStore {
 
     var dummyDataBase: [Memo] = []
+    
     func create<T: NSManagedObject>(entityName: String) -> Observable<T?> {
         let memoMock = MemoMock()
         return Observable.just(memoMock as? T)
