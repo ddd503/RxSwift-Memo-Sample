@@ -49,7 +49,7 @@ final class MemoListViewModel: ViewModelType {
                 self?.memos.accept(memos)
                 return Observable.just(())
         }
-        .asDriver(onErrorDriveWith: Driver.never())
+        .asDriver(onErrorDriveWith: Driver.empty())
 
         let updateMemosAtCompleteSaveMemo = input.didSaveMemo
             .flatMap { (_) -> Observable<()> in
@@ -59,12 +59,12 @@ final class MemoListViewModel: ViewModelType {
                         self?.memos.accept(memos)
                 }
         }
-        .asDriver(onErrorDriveWith: Driver.never())
+        .asDriver(onErrorDriveWith: Driver.empty())
 
         let updateMemosAtDeleteAllMemo = input.tappedUnderRightButton
             .withLatestFrom(input.tableViewEditing)
             .flatMap { (isEditing) -> Driver<Void> in
-                guard isEditing else { return Driver.just(()) }
+                guard isEditing else { return Driver.never() }
                 return input.showActionSheet
                     .flatMap { (event) -> Driver<Void> in
                         switch event.actionType {
@@ -96,7 +96,7 @@ final class MemoListViewModel: ViewModelType {
                                 self?.memos.accept(memos)
                         }
                     })
-                    .asDriver(onErrorDriveWith: Driver.never())
+                    .asDriver(onErrorDriveWith: Driver.empty())
         }
 
         let transitionCreateMemo = input.tappedUnderRightButton

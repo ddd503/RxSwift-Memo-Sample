@@ -83,27 +83,28 @@ class MemoListViewModelTest: XCTestCase {
                                                       MemoMock(),
                                                       MemoMock()])
         /*
-         - 非編集時にボタンタップ（スルー）
-         - 編集モードにする
-         - ボタンタップ
-         - アラート表示
-         - キャンセルタップ
-         - ボタンタップ
-         - アラート表示
-         - 全削除
+         以下の手順で網羅確認
+         1 非編集時にボタンタップ（スルー）
+         2 編集モードにする
+         3 ボタンタップ
+         4 アラート表示
+         5 キャンセルタップ
+         6 ボタンタップ
+         7 アラート表示
+         8 全削除
          */
         let tableViewEditing = scheduler.createHotObservable([.next(1, false),
                                                               .next(3, true)])
-            .asDriver(onErrorDriveWith: Driver.never())
+            .asDriver(onErrorDriveWith: Driver.empty())
 
         let tappedUnderRightButton = scheduler.createHotObservable([.next(2, ()),
                                                                     .next(4, ()),
                                                                     .next(6, ())])
-            .asSignal(onErrorSignalWith: Signal.never())
+            .asSignal(onErrorSignalWith: Signal.empty())
 
         let showActionSheet = scheduler.createHotObservable([.next(5, AlertEvent(style: .cancel, actionType: .cancel)),
                                                              .next(7, AlertEvent(style: .destructive, actionType: .allDelete))])
-            .asDriver(onErrorDriveWith: Driver.never())
+            .asDriver(onErrorDriveWith: Driver.empty())
 
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
@@ -133,7 +134,7 @@ class MemoListViewModelTest: XCTestCase {
         let dummyUniqueId1 = "1000"
         let dummyUniqueId2 = "2000"
         memoRepository.dummyMemos.append(contentsOf: [MemoMock(uniqueId: dummyUniqueId1), MemoMock(uniqueId: dummyUniqueId2)])
-        let deleteMemoAction = scheduler.createHotObservable([.next(1, dummyUniqueId1)]).asDriver(onErrorDriveWith: Driver.never())
+        let deleteMemoAction = scheduler.createHotObservable([.next(1, dummyUniqueId1)]).asDriver(onErrorDriveWith: Driver.empty())
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
                                                       tableViewEditing: Driver.just(false),
@@ -168,14 +169,14 @@ class MemoListViewModelTest: XCTestCase {
 
         let tableViewEditing = scheduler.createHotObservable([.next(1, true),
                                                               .next(4, false)])
-            .asDriver(onErrorDriveWith: Driver.never())
+            .asDriver(onErrorDriveWith: Driver.empty())
 
         let tappedUnderRightButton = scheduler.createHotObservable([.next(2, ()),
                                                                     .next(5, ())])
-            .asSignal(onErrorSignalWith: Signal.never())
+            .asSignal(onErrorSignalWith: Signal.empty())
 
         let showActionSheet = scheduler.createHotObservable([.next(3, AlertEvent(style: .cancel, actionType: .cancel))])
-            .asDriver(onErrorDriveWith: Driver.never())
+            .asDriver(onErrorDriveWith: Driver.empty())
 
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
@@ -204,7 +205,7 @@ class MemoListViewModelTest: XCTestCase {
         let memoRepository = MemoRepositoryMock()
         let tableViewEditing = scheduler.createHotObservable([.next(1, true),
                                                               .next(2, false)])
-            .asDriver(onErrorDriveWith: Driver.never())
+            .asDriver(onErrorDriveWith: Driver.empty())
 
 
         let viewModelOutput = MemoListViewModel()

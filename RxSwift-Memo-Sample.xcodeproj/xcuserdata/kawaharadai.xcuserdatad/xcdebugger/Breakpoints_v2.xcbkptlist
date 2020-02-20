@@ -46,8 +46,8 @@
             filePath = "RxSwift-Memo-SampleTests/Presentation/ViewModel/MemoListViewModelTest.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "155"
-            endingLineNumber = "155"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "test_updateMemosAtDeleteMemo_&#x30e1;&#x30e2;&#x306e;&#x500b;&#x5225;&#x524a;&#x9664;&#x6642;&#x306e;&#x30a4;&#x30d9;&#x30f3;&#x30c8;&#x3092;&#x8cfc;&#x8aad;&#x3067;&#x304d;&#x308b;&#x3053;&#x3068;()"
             landmarkType = "7">
          </BreakpointContent>

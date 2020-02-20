@@ -45,7 +45,7 @@ class MemoDetailViewModel: ViewModelType {
                 .flatMap({ (text) -> Driver<()> in
                     return input.memoRepository
                         .updateMemo(memo: memo, text: text)
-                        .asDriver(onErrorDriveWith: Driver.never())
+                        .asDriver(onErrorDriveWith: Driver.empty())
                 })
         } else {
             // 新規メモの作成時
@@ -54,14 +54,14 @@ class MemoDetailViewModel: ViewModelType {
                 .flatMap({ (text) -> Driver<()> in
                     return input.memoRepository
                         .createMemo(text: text, uniqueId: nil).map {_ in }
-                        .asDriver(onErrorDriveWith: Driver.never())
+                        .asDriver(onErrorDriveWith: Driver.empty())
                 })
         }
 
         let returnMemoList = NotificationCenter.default.rx
             .notification(.NSManagedObjectContextDidSave)
             .map { _ in }
-            .asDriver(onErrorDriveWith: Driver.never())
+            .asDriver(onErrorDriveWith: Driver.empty())
         
         return Output(setupText: setupText,
                       saveMemoText: saveMemoText,

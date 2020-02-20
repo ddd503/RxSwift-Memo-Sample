@@ -54,7 +54,7 @@ struct MemoRepositoryImpl: MemoRepository {
         return createMemo
             .flatMap { (memo) -> Observable<Memo> in
                 guard let memo = memo,
-                    let managedObjectContext = memo.managedObjectContext else { return Observable.empty() }
+                    let managedObjectContext = memo.managedObjectContext else { return Observable.never() }
                 return self.countAll()
                     .map { (allMemoCount) in
                         managedObjectContext.performAndWait {
