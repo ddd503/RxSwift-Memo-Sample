@@ -16,7 +16,12 @@ class MemoRepositoryMock: MemoRepository {
     var dummyMemos = [Memo]()
 
     func createMemo(text: String, uniqueId: String?) -> Observable<Memo> {
-        return Observable.of(MemoMock(),MemoMock())
+        let newMemo = MemoMock(uniqueId: uniqueId ?? "",
+                               title: text.firstLine,
+                               content: text.afterSecondLine,
+                               editDate: Date())
+        dummyMemos.append(newMemo)
+        return Observable.just(newMemo)
     }
 
     func readAll() -> Observable<[Memo]> {
@@ -29,8 +34,8 @@ class MemoRepositoryMock: MemoRepository {
 
     func updateMemo(memo: Memo, text: String) -> Observable<Void> {
         let updateMemo = dummyMemos.filter { memo.uniqueId == $0.uniqueId }.first!
-        updateMemo.title = memo.title
-        updateMemo.content = memo.content
+        updateMemo.title = text.firstLine
+        updateMemo.content = text.afterSecondLine
         updateMemo.editDate = Date()
         return Observable.just(())
     }
