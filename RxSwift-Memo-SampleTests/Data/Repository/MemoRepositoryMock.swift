@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import Foundation
 @testable import RxSwift_Memo_Sample
 
 class MemoRepositoryMock: MemoRepository {
@@ -27,14 +28,20 @@ class MemoRepositoryMock: MemoRepository {
     }
 
     func updateMemo(memo: Memo, text: String) -> Observable<Void> {
+        let updateMemo = dummyMemos.filter { memo.uniqueId == $0.uniqueId }.first!
+        updateMemo.title = memo.title
+        updateMemo.content = memo.content
+        updateMemo.editDate = Date()
         return Observable.just(())
     }
 
     func deleteAll(entityName: String) -> Observable<Void> {
+        dummyMemos = []
         return Observable.just(())
     }
 
     func deleteMemo(uniqueId: String) -> Observable<Void> {
+        dummyMemos = dummyMemos.filter { uniqueId != $0.uniqueId }
         return Observable.just(())
     }
 

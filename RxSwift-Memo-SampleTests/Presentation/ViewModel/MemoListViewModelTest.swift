@@ -48,14 +48,190 @@ class MemoListViewModelTest: XCTestCase {
             .disposed(by: disposeBag)
     }
 
-    func test_updateMemosAtCompleteSaveMemo_メモ保存完了時のイベントを購読できること() {}
+    func test_updateMemosAtCompleteSaveMemo_メモ保存完了時のイベントを購読できること() {
+        let memoRepository = MemoRepositoryMock()
+        memoRepository.dummyMemos.append(contentsOf: [MemoMock(), MemoMock(), MemoMock()])
+        // 仮装時間1を待ったのち保存完了通知を受け取るObservableを用意
+        let didSaveMemo = scheduler.createColdObservable([.next(1, Notification(name: .NSManagedObjectContextDidSave))]).asObservable()
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      tableViewEditing: Driver.just(false),
+                                                      tappedUnderRightButton: Signal.just(()),
+                                                      deleteMemoAction: Driver.just(""),
+                                                      showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
+                                                      didSaveMemo: didSaveMemo))
+        viewModelOutput.updateMemoList
+            .skip(1)
+            .drive(onNext: { memoList in
+                XCTAssertEqual(memoList.count, 3)
+            })
+            .disposed(by: disposeBag)
 
-    func test_updateMemosAtDeleteAllMemo_メモ全件削除時のイベントを購読できること() {}
+        viewModelOutput.updateMemosAtCompleteSaveMemo
+            .drive(onNext: { _ in
+                XCTAssertTrue(true)
+            })
+            .disposed(by: disposeBag)
 
-    func test_updateMemosAtDeleteMemo_メモの個別削除時のイベントを購読できること() {}
+        scheduler.start()
+    }
 
-    func test_transitionCreateMemo_新規作成画面への遷移イベントを購読できること() {}
+    func test_updateMemosAtDeleteAllMemo_メモ全件削除時のイベントを購読できること() {
+        let memoRepository = MemoRepositoryMock()
+        memoRepository.dummyMemos.append(contentsOf: [MemoMock(),
+                                                      MemoMock(),
+                                                      MemoMock(),
+                                                      MemoMock()])
+        /*
+         - 非編集時にボタンタップ（スルー）
+         - 編集モードにする
+         - ボタンタップ
+         - アラート表示
+         - キャンセルタップ
+         - ボタンタップ
+         - アラート表示
+         - 全削除
+         */
+        let tableViewEditing = scheduler.createHotObservable([.next(1, false),
+                                                              .next(3, true)])
+            .asDriver(onErrorDriveWith: Driver.never())
 
-    func test_updateButtonTitle_ボタンタイトルの更新イベントを購読できること() {}
+        let tappedUnderRightButton = scheduler.createHotObservable([.next(2, ()),
+                                                                    .next(4, ()),
+                                                                    .next(6, ())])
+            .asSignal(onErrorSignalWith: Signal.never())
+
+        let showActionSheet = scheduler.createHotObservable([.next(5, AlertEvent(style: .cancel, actionType: .cancel)),
+                                                             .next(7, AlertEvent(style: .destructive, actionType: .allDelete))])
+            .asDriver(onErrorDriveWith: Driver.never())
+
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      tableViewEditing: tableViewEditing,
+                                                      tappedUnderRightButton: tappedUnderRightButton,
+                                                      deleteMemoAction: Driver.just(""),
+                                                      showActionSheet: showActionSheet,
+                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+        viewModelOutput.updateMemoList
+            .skip(1)
+            .drive(onNext: { memoList in
+                XCTAssertEqual(memoList.count, 0)
+            })
+            .disposed(by: disposeBag)
+
+        viewModelOutput.updateMemosAtDeleteAllMemo
+            .drive(onNext: { _ in
+                XCTAssertTrue(true)
+            })
+            .disposed(by: disposeBag)
+
+        scheduler.start()
+    }
+
+    func test_updateMemosAtDeleteMemo_メモの個別削除時のイベントを購読できること() {
+        let memoRepository = MemoRepositoryMock()
+        let dummyUniqueId1 = "1000"
+        let dummyUniqueId2 = "2000"
+        memoRepository.dummyMemos.append(contentsOf: [MemoMock(uniqueId: dummyUniqueId1), MemoMock(uniqueId: dummyUniqueId2)])
+        let deleteMemoAction = scheduler.createHotObservable([.next(1, dummyUniqueId1)]).asDriver(onErrorDriveWith: Driver.never())
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      tableViewEditing: Driver.just(false),
+                                                      tappedUnderRightButton: Signal.just(()),
+                                                      deleteMemoAction: deleteMemoAction,
+                                                      showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
+                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+
+        viewModelOutput.updateMemoList
+            .skip(1)
+            .drive(onNext: { memoList in
+                XCTAssertEqual(memoList.count, 1)
+                XCTAssertEqual(memoList.first!.uniqueId, dummyUniqueId2)
+            })
+            .disposed(by: disposeBag)
+
+        viewModelOutput.updateMemosAtDeleteMemo
+            .drive(onNext: { _ in
+                XCTAssertTrue(true)
+            })
+            .disposed(by: disposeBag)
+
+        scheduler.start()
+    }
+
+    func test_transitionCreateMemo_新規作成画面への遷移イベントを購読できること() {
+        let memoRepository = MemoRepositoryMock()
+        memoRepository.dummyMemos.append(contentsOf: [MemoMock(),
+                                                      MemoMock(),
+                                                      MemoMock(),
+                                                      MemoMock()])
+
+        let tableViewEditing = scheduler.createHotObservable([.next(1, true),
+                                                              .next(4, false)])
+            .asDriver(onErrorDriveWith: Driver.never())
+
+        let tappedUnderRightButton = scheduler.createHotObservable([.next(2, ()),
+                                                                    .next(5, ())])
+            .asSignal(onErrorSignalWith: Signal.never())
+
+        let showActionSheet = scheduler.createHotObservable([.next(3, AlertEvent(style: .cancel, actionType: .cancel))])
+            .asDriver(onErrorDriveWith: Driver.never())
+
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      tableViewEditing: tableViewEditing,
+                                                      tappedUnderRightButton: tappedUnderRightButton,
+                                                      deleteMemoAction: Driver.just(""),
+                                                      showActionSheet: showActionSheet,
+                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+        viewModelOutput.updateMemoList
+            .skip(1)
+            .drive(onNext: { memoList in
+                XCTAssertEqual(memoList.count, 4)
+            })
+            .disposed(by: disposeBag)
+
+        viewModelOutput.transitionCreateMemo
+            .drive(onNext: { _ in
+                XCTAssertTrue(true)
+            })
+            .disposed(by: disposeBag)
+
+        scheduler.start()
+    }
+
+    func test_updateButtonTitle_ボタンタイトルの更新イベントを購読できること() {
+        let memoRepository = MemoRepositoryMock()
+        let tableViewEditing = scheduler.createHotObservable([.next(1, true),
+                                                              .next(2, false)])
+            .asDriver(onErrorDriveWith: Driver.never())
+
+
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      tableViewEditing: tableViewEditing,
+                                                      tappedUnderRightButton: Signal.just(()),
+                                                      deleteMemoAction: Driver.just(""),
+                                                      showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
+                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+
+
+        let observer = scheduler.createObserver(String.self)
+
+        viewModelOutput.updateButtonTitle
+            .drive(observer)
+            .disposed(by: disposeBag)
+
+        let expectedEvents = [
+            Recorded.next(1, "全て削除"), // tableViewEditingにtureを流したらくるはずのタイトル
+            Recorded.next(2, "メモ追加"), // tableViewEditingにfalseを流したらくるはずのタイトル
+        ]
+
+        scheduler.start()
+
+        XCTAssertEqual(expectedEvents, observer.events)
+    }
+
+    func test_シナリオテスト_メモ2件作成_2件目更新_1件目削除_2件作成_全削除() {}
 
 }
