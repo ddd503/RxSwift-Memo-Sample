@@ -35,7 +35,8 @@ class MemoDetailViewController: UIViewController {
         let viewModelOutput =
             viewModel.injection(input: MemoDetailViewModel.Input(memoRepository: MemoRepositoryImpl(memoDataStore: MemoDataStoreImpl()),
                                                                  tappedDoneButton: doneButtonItem.rx.tap.asSignal(),
-                                                                 textViewText: textView.rx.text.orEmpty.asDriver()))
+                                                                 textViewText: textView.rx.text.orEmpty.asDriver(),
+                                                                 didSaveMemo: NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)))
 
         viewModelOutput.setupText
             .drive(onNext: { [weak self] text in

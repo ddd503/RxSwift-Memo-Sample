@@ -308,13 +308,12 @@ class MemoListViewModelTest: XCTestCase {
             Recorded.next(7, [MemoMock(uniqueId: dummyUniqueId2)])
         ]
 
-        // 結果：[5, 0, 0, 1]
+        // メモリストの個数の推移を購読した結果：[5, 0, 0, 1]
         XCTAssertEqual(memosObserver.events.compactMap { $0.value.element?.count },
                        expectedEvents.compactMap { $0.value.element?.count })
 
-        // 結果：[["0", "1", "2", "3", "4"], [], [], ["2000"]]
+        // メモリストの中身(uniqueId)の推移を購読した結果：[["0", "1", "2", "3", "4"], [], [], ["2000"]]
         XCTAssertEqual(memosObserver.events.compactMap { $0.value.element?.compactMap { $0.uniqueId } },
                        expectedEvents.compactMap { $0.value.element?.compactMap { $0.uniqueId } })
     }
-
 }

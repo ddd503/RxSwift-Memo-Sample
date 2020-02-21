@@ -17,6 +17,7 @@ class MemoDetailViewModel: ViewModelType {
         let memoRepository: MemoRepository
         let tappedDoneButton: Signal<()>
         let textViewText: Driver<String>
+        let didSaveMemo: Observable<Notification>
     }
 
     struct Output {
@@ -39,7 +40,7 @@ class MemoDetailViewModel: ViewModelType {
         let saveMemoText: Driver<()>
 
         if let memo = self.memo {
-            // 既存メモの更新時
+            // 既存メモの編集時
             setupText = Driver.just((memo.title ?? "") + "\n" + (memo.content ?? ""))
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText)
                 .flatMap({ (text) -> Driver<()> in
@@ -53,13 +54,13 @@ class MemoDetailViewModel: ViewModelType {
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText)
                 .flatMap({ (text) -> Driver<()> in
                     return input.memoRepository
-                        .createMemo(text: text, uniqueId: nil).map {_ in }
+                        .createMemo(text: text, uniqueId: nil)
+                        .map {_ in }
                         .asDriver(onErrorDriveWith: Driver.empty())
                 })
         }
-
-        let returnMemoList = NotificationCenter.default.rx
-            .notification(.NSManagedObjectContextDidSave)
+        
+        let returnMemoList = input.didSaveMemo
             .map { _ in }
             .asDriver(onErrorDriveWith: Driver.empty())
         
