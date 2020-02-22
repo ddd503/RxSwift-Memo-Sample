@@ -16,7 +16,7 @@ class MemoRepositoryMock: MemoRepository {
     var dummyMemos = [Memo]()
 
     func createMemo(text: String, uniqueId: String?) -> Observable<Memo> {
-        let newMemo = MemoMock(uniqueId: uniqueId ?? "",
+        let newMemo = MemoMock(uniqueId: uniqueId ?? "\(dummyMemos.count + 1)",
                                title: text.firstLine,
                                content: text.afterSecondLine,
                                editDate: Date())
