@@ -2,32 +2,32 @@
 <testsuites name='RxSwift-Memo-SampleTests.xctest' tests='22' failures='0'>
   <testsuite name='RxSwift_Memo_SampleTests.MemoDataStoreTest' tests='4' failures='0'>
     <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_create_任意のEntityを新規作成できること' time='0.004'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_delete_指定した1件のEntityを削除できること' time='0.042'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_excute_リクエストが実行されていること' time='0.443'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_fetchArray_条件を指定してEntityの配列を取得できること' time='0.016'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_delete_指定した1件のEntityを削除できること' time='0.027'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_excute_リクエストが実行されていること' time='0.557'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoDataStoreTest' name='test_fetchArray_条件を指定してEntityの配列を取得できること' time='0.015'/>
   </testsuite>
   <testsuite name='RxSwift_Memo_SampleTests.MemoDetailViewModelTest' tests='4' failures='0'>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoDetailViewModelTest' name='test_saveMemoText_returnMemoList_書き込まれたメモの保存処理実行完了と前画面へ戻る遷移イベントを購読できること_メモ内容更新時' time='0.002'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoDetailViewModelTest' name='test_saveMemoText_returnMemoList_書き込まれたメモの保存処理実行完了と前画面へ戻る遷移イベントを購読できること_メモ内容更新時' time='0.009'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoDetailViewModelTest' name='test_saveMemoText_returnMemoList_書き込まれたメモの保存処理実行完了と前画面へ戻る遷移イベントを購読できること_メモ新規作成時' time='0.001'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoDetailViewModelTest' name='test_setupText_新規メモ作成時のメモ詳細の初期状態が白紙状態であること' time='0.000'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoDetailViewModelTest' name='test_setupText_既存メモ作成時のメモ詳細の初期状態が既存メモが入った状態であること' time='0.001'/>
   </testsuite>
   <testsuite name='RxSwift_Memo_SampleTests.MemoListViewModelTest' tests='7' failures='0'>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_transitionCreateMemo_新規作成画面への遷移イベントを購読できること' time='0.004'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_transitionCreateMemo_新規作成画面への遷移イベントを購読できること' time='0.003'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_updateButtonTitle_ボタンタイトルの更新イベントを購読できること' time='0.001'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_updateMemosAtCompleteSaveMemo_メモ保存完了時のイベントを購読できること' time='0.001'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_updateMemosAtDeleteAllMemo_メモ全件削除時のイベントを購読できること' time='0.003'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_updateMemosAtDeleteMemo_メモの個別削除時のイベントを購読できること' time='0.001'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_updateMemosAtStartUp_購読時に保存中のメモを全件取得できること' time='0.001'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_シナリオテスト_メモ5件作成_全削除_2件作成_1件目削除' time='0.005'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoListViewModelTest' name='test_シナリオテスト_メモ5件作成_全削除_2件作成_1件目削除' time='0.006'/>
   </testsuite>
   <testsuite name='RxSwift_Memo_SampleTests.MemoRepositoryTest' tests='7' failures='0'>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_countAll_保存されているメモの総数を取得できること' time='0.183'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_countAll_保存されているメモの総数を取得できること' time='0.165'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_createMemo_1件のメモを新規作成できること' time='0.001'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_deleteAll_保存されているメモを全て削除できること' time='0.011'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_deleteAll_保存されているメモを全て削除できること' time='0.022'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_deleteMemo_ID指定で1件のメモを削除できること' time='0.005'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_readAll_保存中のメモを全件取得できること' time='0.081'/>
-    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_readMemo_ID指定で特定のメモを1件取得できること' time='0.005'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_readAll_保存中のメモを全件取得できること' time='0.108'/>
+    <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_readMemo_ID指定で特定のメモを1件取得できること' time='0.003'/>
     <testcase classname='RxSwift_Memo_SampleTests.MemoRepositoryTest' name='test_updateMemo_メモ内容を更新できること' time='0.002'/>
   </testsuite>
 </testsuites>

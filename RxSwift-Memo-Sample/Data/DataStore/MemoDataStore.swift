@@ -35,7 +35,7 @@ protocol MemoDataStore {
 
     /// 任意のリクエスト(NSPersistentStoreRequest)を実行する
     /// - Parameter request: NSPersistentStoreRequest
-    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void>
+    func execute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void>
 
     /// 任意のオブジェクトを削除する
     /// - Parameter object: 削除するオブジェクト
@@ -87,7 +87,7 @@ struct MemoDataStoreImpl: MemoDataStore {
         }
     }
 
-    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
+    func execute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         do {
             try context.execute(request)

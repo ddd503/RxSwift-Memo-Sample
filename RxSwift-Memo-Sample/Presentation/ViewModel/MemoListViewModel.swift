@@ -44,7 +44,7 @@ final class MemoListViewModel: ViewModelType {
     func injection(input: Input) -> Output {
         // 基本的にはトリガースタートの方が良い(この定義方法だと宣言時から走るため購読時からではない)
         let updateMemosAtStartUp = input.memoRepository
-            .readAll()
+            .readAllMemos()
             .flatMap { [weak self] (memos) -> Observable<()> in
                 self?.memos.accept(memos)
                 return Observable.just(())
@@ -54,7 +54,7 @@ final class MemoListViewModel: ViewModelType {
         let updateMemosAtCompleteSaveMemo = input.didSaveMemo
             .flatMap { (_) -> Observable<()> in
                 return input.memoRepository
-                    .readAll()
+                    .readAllMemos()
                     .map { [weak self] (memos) in
                         self?.memos.accept(memos)
                 }
@@ -73,7 +73,7 @@ final class MemoListViewModel: ViewModelType {
                                 .deleteAll(entityName: "Memo")
                                 .flatMap { (_) -> Observable<Void> in
                                     return input.memoRepository
-                                        .readAll()
+                                        .readAllMemos()
                                         .map { [weak self] (memos) in
                                             self?.memos.accept(memos)
                                     }
@@ -91,7 +91,7 @@ final class MemoListViewModel: ViewModelType {
                     .deleteMemo(uniqueId: uniqueId)
                     .flatMap({ (_) -> Observable<Void> in
                         return input.memoRepository
-                            .readAll()
+                            .readAllMemos()
                             .map { [weak self] (memos) in
                                 self?.memos.accept(memos)
                         }

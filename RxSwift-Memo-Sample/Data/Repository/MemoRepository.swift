@@ -18,7 +18,7 @@ protocol MemoRepository {
     func createMemo(text: String, uniqueId: String?) -> Observable<Memo>
 
     /// 全メモを取得する
-    func readAll() -> Observable<[Memo]>
+    func readAllMemos() -> Observable<[Memo]>
 
     /// ID指定でメモを1件取得する
     /// - Parameter uniqueId: ユニークID
@@ -69,7 +69,7 @@ struct MemoRepositoryImpl: MemoRepository {
         }
     }
 
-    func readAll() -> Observable<[Memo]> {
+    func readAllMemos() -> Observable<[Memo]> {
         let allMemos: Observable<[Memo]> = memoDataStore.fetchArray(predicates: [],
                                                                     sortKey: "editDate",
                                                                     ascending: false,
@@ -103,7 +103,7 @@ struct MemoRepositoryImpl: MemoRepository {
     func deleteAll(entityName: String) -> Observable<Void> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        return memoDataStore.excute(request: deleteRequest)
+        return memoDataStore.execute(request: deleteRequest)
     }
 
     func deleteMemo(uniqueId: String) -> Observable<Void> {
@@ -115,6 +115,6 @@ struct MemoRepositoryImpl: MemoRepository {
     }
 
     func countAll() -> Observable<Int> {
-        return readAll().map { $0.count }
+        return readAllMemos().map { $0.count }
     }
 }

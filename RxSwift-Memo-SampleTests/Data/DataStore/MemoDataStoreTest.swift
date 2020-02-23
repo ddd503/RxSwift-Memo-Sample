@@ -63,7 +63,7 @@ class MemoDataStoreTest: XCTestCase {
         XCTAssertEqual(fetchMemos.count, 2)
     }
 
-    func test_excute_リクエストが実行されていること() {
+    func test_execute_リクエストが実行されていること() {
         let memoDataStore = MemoDataStoreImpl()
         let entityName = "Memo"
         let allMemosCount = 100
@@ -86,7 +86,7 @@ class MemoDataStoreTest: XCTestCase {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
-        try! memoDataStore.excute(request: deleteRequest).toBlocking().first()!
+        try! memoDataStore.execute(request: deleteRequest).toBlocking().first()!
 
         // 削除後に再びfetchして全て消えているかを確認
         let allMemosAfterRequest: [Memo] = try! memoDataStore.fetchArray(predicates: [],

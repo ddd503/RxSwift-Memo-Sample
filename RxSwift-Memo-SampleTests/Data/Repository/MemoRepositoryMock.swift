@@ -24,7 +24,7 @@ class MemoRepositoryMock: MemoRepository {
         return Observable.just(newMemo)
     }
 
-    func readAll() -> Observable<[Memo]> {
+    func readAllMemos() -> Observable<[Memo]> {
         return Observable.just(dummyMemos)
     }
 

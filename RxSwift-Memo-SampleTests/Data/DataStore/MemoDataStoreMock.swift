@@ -29,7 +29,7 @@ class MemoDataStoreMock: MemoDataStore {
         return Observable.just(fetchResult)
     }
 
-    func excute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
+    func execute<R: NSPersistentStoreRequest>(request: R) -> Observable<Void> {
         if let deleteRequest = request as? NSBatchDeleteRequest,
             let entityName = deleteRequest.fetchRequest.entityName,
             entityName == "Memo" {

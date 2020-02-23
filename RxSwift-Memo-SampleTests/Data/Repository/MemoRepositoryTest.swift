@@ -23,7 +23,7 @@ class MemoRepositoryTest: XCTestCase {
         XCTAssertEqual(memo.content, "テストコンテンツ1\nテストコンテンツ2")
     }
 
-    func test_readAll_保存中のメモを全件取得できること() {
+    func test_readAllMemos_保存中のメモを全件取得できること() {
         let memoDataStore = MemoDataStoreMock()
         let memoRepository = MemoRepositoryImpl(memoDataStore: memoDataStore)
         let allMemosCount = 100
@@ -33,7 +33,7 @@ class MemoRepositoryTest: XCTestCase {
             memoDataStore.dummyDataBase.append(memo)
         }
 
-        let blocking = memoRepository.readAll().toBlocking()
+        let blocking = memoRepository.readAllMemos().toBlocking()
         guard let allMemos = try? blocking.first() else {
             XCTFail("全件取得に失敗")
             return
@@ -113,13 +113,13 @@ class MemoRepositoryTest: XCTestCase {
             memoDataStore.dummyDataBase.append(memo)
         }
 
-        let allMemosBeforeDeleteAll = try! memoRepository.readAll().toBlocking().first()!
+        let allMemosBeforeDeleteAll = try! memoRepository.readAllMemos().toBlocking().first()!
         XCTAssertEqual(allMemosBeforeDeleteAll.count, allMemosCount)
 
         let blocking = memoRepository.deleteAll(entityName: "Memo").toBlocking()
         XCTAssertNoThrow(try blocking.first())
 
-        let allMemosAfterDeleteAll = try! memoRepository.readAll().toBlocking().first()!
+        let allMemosAfterDeleteAll = try! memoRepository.readAllMemos().toBlocking().first()!
         XCTAssertEqual(allMemosAfterDeleteAll.count, 0)
     }
 
@@ -141,13 +141,13 @@ class MemoRepositoryTest: XCTestCase {
          let memo3 = try! memoRepository.createMemo(text: "\(dummyTitle3)\n\(dummyContent3)", uniqueId: dummyUniqueId3).toBlocking().first()!
         memoDataStore.dummyDataBase.append(contentsOf: [memo1, memo2, memo3])
 
-        let allMemosBeforeDelete = try! memoRepository.readAll().toBlocking().first()!
+        let allMemosBeforeDelete = try! memoRepository.readAllMemos().toBlocking().first()!
         XCTAssertEqual(allMemosBeforeDelete.count, 3)
 
         let blocking = memoRepository.deleteMemo(uniqueId: dummyUniqueId1).toBlocking()
         XCTAssertNoThrow(try blocking.first())
 
-        let allMemosAfterDelete = try! memoRepository.readAll().toBlocking().first()!
+        let allMemosAfterDelete = try! memoRepository.readAllMemos().toBlocking().first()!
         XCTAssertEqual(allMemosAfterDelete.count, 2)
         XCTAssertTrue(allMemosAfterDelete.compactMap { $0.uniqueId }.contains(dummyUniqueId2))
         XCTAssertTrue(allMemosAfterDelete.compactMap { $0.uniqueId }.contains(dummyUniqueId3))
