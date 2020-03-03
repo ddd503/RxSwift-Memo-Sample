@@ -39,12 +39,21 @@ final class MemoListViewModel: ViewModelType {
         let listDataSource: BehaviorRelay<[Memo]>
         /// ボタンタイトルの更新
         let updateButtonTitle: Driver<String>
+        /// エラーアラートをの表示
+        let showErrorAlert: PublishRelay<String?>
     }
     
     func injection(input: Input) -> Output {
+
+        let showErrorAlert = PublishRelay<String?>()
+
         // 基本的にはトリガースタートの方が良い(この定義方法だと宣言時から走るため購読時からではない)
         let updateMemosAtStartUp = input.memoRepository
             .readAllMemos()
+            .catchError({ (error) -> Observable<[Memo]> in
+                showErrorAlert.accept(error.localizedDescription)
+                return Observable.never()
+            })
             .flatMap { [weak self] (memos) -> Observable<()> in
                 self?.memos.accept(memos)
                 return Observable.just(())
@@ -55,6 +64,10 @@ final class MemoListViewModel: ViewModelType {
             .flatMap { (_) -> Observable<()> in
                 return input.memoRepository
                     .readAllMemos()
+                    .catchError({ (error) -> Observable<[Memo]> in
+                        showErrorAlert.accept(error.localizedDescription)
+                        return Observable.never()
+                    })
                     .map { [weak self] (memos) in
                         self?.memos.accept(memos)
                 }
@@ -71,9 +84,17 @@ final class MemoListViewModel: ViewModelType {
                         case .allDelete:
                             return input.memoRepository
                                 .deleteAll(entityName: "Memo")
-                                .flatMap { (_) -> Observable<Void> in
+                                .catchError({ (error) -> Observable<()> in
+                                    showErrorAlert.accept(error.localizedDescription)
+                                    return Observable.empty()
+                                })
+                                .flatMap { (_) -> Observable<()> in
                                     return input.memoRepository
                                         .readAllMemos()
+                                        .catchError({ (error) -> Observable<[Memo]> in
+                                            showErrorAlert.accept(error.localizedDescription)
+                                            return Observable.never()
+                                        })
                                         .map { [weak self] (memos) in
                                             self?.memos.accept(memos)
                                     }
@@ -89,9 +110,16 @@ final class MemoListViewModel: ViewModelType {
             .flatMap { (uniqueId) -> Driver<()> in
                 return input.memoRepository
                     .deleteMemo(uniqueId: uniqueId)
-                    .flatMap({ (_) -> Observable<Void> in
+                    .catchError({ (error) -> Observable<()> in
+                        showErrorAlert.accept(error.localizedDescription)
+                        return Observable.empty()
+                    })
+                    .flatMap({ (_) -> Observable<()> in
                         return input.memoRepository
                             .readAllMemos()
+                            .catchError({ (error) -> Observable<[Memo]> in
+                                return Observable.never()
+                            })
                             .map { [weak self] (memos) in
                                 self?.memos.accept(memos)
                         }
@@ -117,6 +145,7 @@ final class MemoListViewModel: ViewModelType {
                       updateMemosAtDeleteMemo: updateMemosAtDeleteMemo,
                       transitionCreateMemo: transitionCreateMemo,
                       listDataSource: self.memos,
-                      updateButtonTitle: updateButtonTitle)
+                      updateButtonTitle: updateButtonTitle,
+                      showErrorAlert: showErrorAlert)
     }
 }

@@ -89,6 +89,14 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         }
         .disposed(by: disposeBag)
 
+        viewModelOutput.showErrorAlert
+            .subscribeOn(MainScheduler.asyncInstance)
+            .share()
+            .subscribe(onNext: { [weak self] message in
+                self?.showNormalErrorAlert(message: message)
+            })
+            .disposed(by: disposeBag)
+
         /// テーブルビューのセルタップ時
         tableView.rx.modelSelected(Memo.self)
             .subscribe(onNext: { [weak self] memo in

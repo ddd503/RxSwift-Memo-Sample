@@ -28,14 +28,14 @@ protocol MemoRepository {
     /// - Parameters:
     ///   - uniqueId: 更新するメモのuniqueId
     ///   - text: 更新内容
-    func updateMemo(uniqueId: String, text: String) -> Observable<Void>
+    func updateMemo(uniqueId: String, text: String) -> Observable<()>
 
     /// 全メモを削除する
-    func deleteAll(entityName: String) -> Observable<Void>
+    func deleteAll(entityName: String) -> Observable<()>
 
     /// ID指定でメモを削除する
     /// - Parameter uniqueId: ユニークID
-    func deleteMemo(uniqueId: String) -> Observable<Void>
+    func deleteMemo(uniqueId: String) -> Observable<()>
 
     /// 全メモ件数を取得する
     func countAll() -> Observable<Int>
@@ -54,7 +54,9 @@ struct MemoRepositoryImpl: MemoRepository {
         return createMemo
             .flatMap { (memo) -> Observable<Memo> in
                 guard let memo = memo,
-                    let managedObjectContext = memo.managedObjectContext else { return Observable.never() }
+                    let managedObjectContext = memo.managedObjectContext else {
+                        return Observable.error(CoreDataError.notFoundContext)
+                }
                 return self.countAll()
                     .map { (allMemoCount) in
                         managedObjectContext.performAndWait {
@@ -86,10 +88,12 @@ struct MemoRepositoryImpl: MemoRepository {
         return fetchResult.map { $0.first }
     }
 
-    func updateMemo(uniqueId: String, text: String) -> Observable<Void> {
-        return readMemo(uniqueId: uniqueId).flatMap { (memo) -> Observable<Void> in
+    func updateMemo(uniqueId: String, text: String) -> Observable<()> {
+        return readMemo(uniqueId: uniqueId).flatMap { (memo) -> Observable<()> in
             guard let memo = memo,
-                let context = memo.managedObjectContext else { return Observable.empty() }
+                let context = memo.managedObjectContext else {
+                    return Observable.error(CoreDataError.notFoundContext)
+            }
             context.performAndWait {
                 memo.title = text.firstLine
                 memo.content = text.afterSecondLine
@@ -99,16 +103,16 @@ struct MemoRepositoryImpl: MemoRepository {
         }
     }
 
-    func deleteAll(entityName: String) -> Observable<Void> {
+    func deleteAll(entityName: String) -> Observable<()> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         return memoDataStore.execute(request: deleteRequest)
     }
 
-    func deleteMemo(uniqueId: String) -> Observable<Void> {
+    func deleteMemo(uniqueId: String) -> Observable<()> {
         return readMemo(uniqueId: uniqueId)
-            .flatMap { (memo) -> Observable<Void> in
-                guard let memo = memo else { return Observable.empty() }
+            .flatMap { (memo) -> Observable<()> in
+                guard let memo = memo else { return Observable.error(CoreDataError.failedFetchMemoById) }
                 return self.memoDataStore.delete(object: memo)
         }
     }

@@ -27,6 +27,8 @@ class MemoDetailViewModel: ViewModelType {
         let saveMemoText: Driver<()>
         /// リスト画面に戻る
         let returnMemoList: Driver<()>
+        /// エラーアラートをの表示
+        let showErrorAlert: PublishRelay<String?>
     }
 
     private let memo: Memo?
@@ -38,6 +40,7 @@ class MemoDetailViewModel: ViewModelType {
     func injection(input: Input) -> Output {
         let setupText: Driver<String>
         let saveMemoText: Driver<()>
+        let showErrorAlert = PublishRelay<String?>()
 
         if let memo = self.memo {
             // 既存メモの編集時
@@ -47,6 +50,10 @@ class MemoDetailViewModel: ViewModelType {
                     guard let uniqueId = memo.uniqueId else { return Driver.empty() }
                     return input.memoRepository
                         .updateMemo(uniqueId: uniqueId, text: text)
+                        .catchError({ (error) -> Observable<()> in
+                            showErrorAlert.accept(error.localizedDescription)
+                            return Observable.just(())
+                        })
                         .asDriver(onErrorDriveWith: Driver.empty())
                 })
         } else {
@@ -56,6 +63,10 @@ class MemoDetailViewModel: ViewModelType {
                 .flatMap({ (text) -> Driver<()> in
                     return input.memoRepository
                         .createMemo(text: text, uniqueId: nil)
+                        .catchError({ (error) -> Observable<Memo> in
+                            showErrorAlert.accept(error.localizedDescription)
+                            return Observable.empty()
+                        })
                         .map {_ in }
                         .asDriver(onErrorDriveWith: Driver.empty())
                 })
@@ -67,6 +78,7 @@ class MemoDetailViewModel: ViewModelType {
         
         return Output(setupText: setupText,
                       saveMemoText: saveMemoText,
-                      returnMemoList: returnMemoList)
+                      returnMemoList: returnMemoList,
+                      showErrorAlert: showErrorAlert)
     }
 }

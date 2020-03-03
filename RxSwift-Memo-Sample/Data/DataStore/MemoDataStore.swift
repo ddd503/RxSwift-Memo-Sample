@@ -47,7 +47,7 @@ struct MemoDataStoreImpl: MemoDataStore {
     func create<T: NSManagedObject>(entityName: String) -> Observable<T?> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)
-        guard let memoEntity = entity else { return Observable.just(nil) }
+        guard let memoEntity = entity else { return Observable.error(CoreDataError.failedCreateEntity) }
         let object = NSManagedObject(entity: memoEntity, insertInto: context) as? T
         return Observable.just(object)
     }
@@ -69,7 +69,9 @@ struct MemoDataStoreImpl: MemoDataStore {
                                         ascending: Bool,
                                         logicalType: NSCompoundPredicate.LogicalType) -> Observable<[T]> {
         let context = CoreDataPropaties.shared.persistentContainer.viewContext
-        guard let fetchRequest: NSFetchRequest<T> = T.fetchRequest() as? NSFetchRequest<T> else { return Observable.just([T]())}
+        guard let fetchRequest: NSFetchRequest<T> = T.fetchRequest() as? NSFetchRequest<T> else {
+            return Observable.error(CoreDataError.failedPrepareRequest)
+        }
         let sortDescriptor = NSSortDescriptor(key: sortKey, ascending: ascending)
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchRequest.predicate = NSCompoundPredicate(type: logicalType, subpredicates: predicates)
@@ -81,9 +83,13 @@ struct MemoDataStoreImpl: MemoDataStore {
 
         return Observable.just(resultsController)
             .flatMap { (fetchResultController) -> Observable<[T]> in
-                try fetchResultController.performFetch()
-                let objects = fetchResultController.fetchedObjects ?? []
-                return Observable.just(objects)
+                do {
+                    try fetchResultController.performFetch()
+                    let objects = fetchResultController.fetchedObjects ?? []
+                    return Observable.just(objects)
+                } catch {
+                    return Observable.error(CoreDataError.failedFetchRequest)
+                }
         }
     }
 

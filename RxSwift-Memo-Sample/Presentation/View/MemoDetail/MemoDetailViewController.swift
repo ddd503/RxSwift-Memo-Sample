@@ -54,6 +54,14 @@ class MemoDetailViewController: UIViewController {
             })
             .disposed(by: disposeBag)
 
+        viewModelOutput.showErrorAlert
+            .subscribeOn(MainScheduler.asyncInstance)
+            .share()
+            .subscribe(onNext: { [weak self] message in
+                self?.showNormalErrorAlert(message: message)
+            })
+            .disposed(by: disposeBag)
+
         // TextViewに文字が入力されていない時はDoneボタンを非活性にする
         textView.rx.text
             .orEmpty
