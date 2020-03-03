@@ -32,8 +32,8 @@ class MemoRepositoryMock: MemoRepository {
         return isReadMemoSuccess ? Observable.just(MemoMock()) : Observable.just(nil)
     }
 
-    func updateMemo(memo: Memo, text: String) -> Observable<Void> {
-        let updateMemo = dummyMemos.filter { memo.uniqueId == $0.uniqueId }.first!
+    func updateMemo(uniqueId: String, text: String) -> Observable<Void> {
+        let updateMemo = dummyMemos.filter { uniqueId == $0.uniqueId }.first!
         updateMemo.title = text.firstLine
         updateMemo.content = text.afterSecondLine
         updateMemo.editDate = Date()

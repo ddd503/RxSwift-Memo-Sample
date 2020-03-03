@@ -26,9 +26,9 @@ protocol MemoRepository {
 
     /// メモを更新する
     /// - Parameters:
-    ///   - memo: 更新するメモ
+    ///   - uniqueId: 更新するメモのuniqueId
     ///   - text: 更新内容
-    func updateMemo(memo: Memo, text: String) -> Observable<Void>
+    func updateMemo(uniqueId: String, text: String) -> Observable<Void>
 
     /// 全メモを削除する
     func deleteAll(entityName: String) -> Observable<Void>
@@ -86,17 +86,16 @@ struct MemoRepositoryImpl: MemoRepository {
         return fetchResult.map { $0.first }
     }
 
-    func updateMemo(memo: Memo, text: String) -> Observable<Void> {
-        return Observable.just(memo.managedObjectContext)
-            .flatMap { (context) -> Observable<Void> in
-                guard let context = context else { return Observable.empty() }
-                context.performAndWait {
-                    memo.title = text.firstLine
-                    memo.content = text.afterSecondLine
-                    memo.editDate = Date()
-                    self.memoDataStore.save(context: context)
-                }
-                return Observable.just(())
+    func updateMemo(uniqueId: String, text: String) -> Observable<Void> {
+        return readMemo(uniqueId: uniqueId).flatMap { (memo) -> Observable<Void> in
+            guard let memo = memo,
+                let context = memo.managedObjectContext else { return Observable.empty() }
+            context.performAndWait {
+                memo.title = text.firstLine
+                memo.content = text.afterSecondLine
+                memo.editDate = Date()
+            }
+            return self.memoDataStore.save(context: context)
         }
     }
 

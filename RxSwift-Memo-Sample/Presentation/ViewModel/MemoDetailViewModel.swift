@@ -44,8 +44,9 @@ class MemoDetailViewModel: ViewModelType {
             setupText = Driver.just((memo.title ?? "") + "\n" + (memo.content ?? ""))
             saveMemoText = input.tappedDoneButton.withLatestFrom(input.textViewText)
                 .flatMap({ (text) -> Driver<()> in
+                    guard let uniqueId = memo.uniqueId else { return Driver.empty() }
                     return input.memoRepository
-                        .updateMemo(memo: memo, text: text)
+                        .updateMemo(uniqueId: uniqueId, text: text)
                         .asDriver(onErrorDriveWith: Driver.empty())
                 })
         } else {

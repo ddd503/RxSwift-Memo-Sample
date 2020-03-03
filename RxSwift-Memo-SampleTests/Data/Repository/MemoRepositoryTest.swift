@@ -93,7 +93,7 @@ class MemoRepositoryTest: XCTestCase {
         // 保存
         memoDataStore.dummyDataBase.append(memo)
 
-        let blocking = memoRepository.updateMemo(memo: memo, text: dummyTextAfterChange).toBlocking()
+        let blocking = memoRepository.updateMemo(uniqueId: memo.uniqueId!, text: dummyTextAfterChange).toBlocking()
 
         XCTAssertNoThrow(try blocking.first())
 

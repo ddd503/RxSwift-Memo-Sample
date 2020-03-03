@@ -19,8 +19,8 @@ class MemoDataStoreMock: MemoDataStore {
         return Observable.just(memoMock as? T)
     }
 
-    func save(context: NSManagedObjectContext) -> Result<Void, Error> {
-        return .success(())
+    func save(context: NSManagedObjectContext) -> Observable<Void> {
+        return Observable.just(())
     }
 
     func fetchArray<T: NSManagedObject>(predicates: [NSPredicate], sortKey: String, ascending: Bool, logicalType: NSCompoundPredicate.LogicalType) -> Observable<[T]> {
