@@ -37,6 +37,8 @@ class MemoDetailViewModelTest: XCTestCase {
     }
 
     func test_setupText_既存メモ作成時のメモ詳細の初期状態が既存メモが入った状態であること() {
+        let testExpectation = expectation(description: "既存メモ作成時のメモ詳細の初期状態が既存メモが入った状態であること")
+
         let memoRepository = MemoRepositoryMock()
         let dummyUniqueId = "1000"
         let memo = MemoMock(uniqueId: dummyUniqueId,
@@ -52,8 +54,11 @@ class MemoDetailViewModelTest: XCTestCase {
         viewModelOutput.setupText
             .drive(onNext: { text in
                 XCTAssertEqual(text, "テスト1\nコンテンツ1")
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 
     func test_saveMemoText_returnMemoList_書き込まれたメモの保存処理実行完了と前画面へ戻る遷移イベントを購読できること_メモ新規作成時() {

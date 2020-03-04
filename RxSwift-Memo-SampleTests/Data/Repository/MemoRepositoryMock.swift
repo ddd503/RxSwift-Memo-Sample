@@ -12,10 +12,13 @@ import Foundation
 
 class MemoRepositoryMock: MemoRepository {
 
-    var isReadMemoSuccess = true
+    var isSuccessFunc = true
     var dummyMemos = [Memo]()
+    let testError = NSError(domain: "TestErrorDomain", code: 999, userInfo: nil)
 
     func createMemo(text: String, uniqueId: String?) -> Observable<Memo> {
+        guard isSuccessFunc else { return Observable.error(testError) }
+
         let newMemo = MemoMock(uniqueId: uniqueId ?? "\(dummyMemos.count + 1)",
                                title: text.firstLine,
                                content: text.afterSecondLine,
@@ -25,14 +28,16 @@ class MemoRepositoryMock: MemoRepository {
     }
 
     func readAllMemos() -> Observable<[Memo]> {
-        return Observable.just(dummyMemos)
+        return isSuccessFunc ? Observable.just(dummyMemos) : Observable.error(testError)
     }
 
     func readMemo(uniqueId: String) -> Observable<Memo?> {
-        return isReadMemoSuccess ? Observable.just(MemoMock()) : Observable.just(nil)
+        return isSuccessFunc ? Observable.just(MemoMock()) : Observable.error(testError)
     }
 
-    func updateMemo(uniqueId: String, text: String) -> Observable<Void> {
+    func updateMemo(uniqueId: String, text: String) -> Observable<()> {
+        guard isSuccessFunc else { return Observable.error(testError) }
+
         let updateMemo = dummyMemos.filter { uniqueId == $0.uniqueId }.first!
         updateMemo.title = text.firstLine
         updateMemo.content = text.afterSecondLine
@@ -40,12 +45,16 @@ class MemoRepositoryMock: MemoRepository {
         return Observable.just(())
     }
 
-    func deleteAll(entityName: String) -> Observable<Void> {
+    func deleteAll(entityName: String) -> Observable<()> {
+        guard isSuccessFunc else { return Observable.error(testError) }
+
         dummyMemos = []
         return Observable.just(())
     }
 
-    func deleteMemo(uniqueId: String) -> Observable<Void> {
+    func deleteMemo(uniqueId: String) -> Observable<()> {
+        guard isSuccessFunc else { return Observable.error(testError) }
+
         dummyMemos = dummyMemos.filter { uniqueId != $0.uniqueId }
         return Observable.just(())
     }

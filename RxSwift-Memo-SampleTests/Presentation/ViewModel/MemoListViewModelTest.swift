@@ -23,6 +23,9 @@ class MemoListViewModelTest: XCTestCase {
     }
 
     func test_updateMemosAtWillAppear_viewWillAppearのタイミングで保存中のメモを全件取得できること() {
+        let testExpectation = expectation(description: "viewWillAppearのタイミングで保存中のメモを全件取得できること")
+        testExpectation.expectedFulfillmentCount = 2
+
         let memoRepository = MemoRepositoryMock()
         memoRepository.dummyMemos.append(contentsOf: [MemoMock(), MemoMock()])
 
@@ -34,24 +37,32 @@ class MemoListViewModelTest: XCTestCase {
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: Driver.just(""),
                                                       showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
-                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+                                                      didSaveMemo: Observable.empty()))
 
         // 宣言時ではなく、購読時の評価をしたいため、初回をskipする
         viewModelOutput.updateMemoList
             .skip(1)
             .drive(onNext: { memoList in
                 XCTAssertEqual(memoList.count, 2)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtWillAppear
             .drive(onNext: { _ in
-                XCTAssertTrue(true)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
+
+        scheduler.start()
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 
     func test_updateMemosAtCompleteSaveMemo_メモ保存完了時のイベントを購読できること() {
+        let testExpectation = expectation(description: "メモ保存完了時のイベントを購読できること")
+        testExpectation.expectedFulfillmentCount = 2
+
         let memoRepository = MemoRepositoryMock()
         memoRepository.dummyMemos.append(contentsOf: [MemoMock(), MemoMock(), MemoMock()])
         // 仮装時間1を待ったのち保存完了通知を受け取るObservableを用意
@@ -68,19 +79,25 @@ class MemoListViewModelTest: XCTestCase {
             .skip(1)
             .drive(onNext: { memoList in
                 XCTAssertEqual(memoList.count, 3)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtCompleteSaveMemo
             .drive(onNext: { _ in
-                XCTAssertTrue(true)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         scheduler.start()
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 
     func test_updateMemosAtDeleteAllMemo_メモ全件削除時のイベントを購読できること() {
+        let testExpectation = expectation(description: "メモ全件削除時のイベントを購読できること")
+        testExpectation.expectedFulfillmentCount = 4
+
         let memoRepository = MemoRepositoryMock()
         memoRepository.dummyMemos.append(contentsOf: [MemoMock(),
                                                       MemoMock(),
@@ -117,24 +134,30 @@ class MemoListViewModelTest: XCTestCase {
                                                       tappedUnderRightButton: tappedUnderRightButton,
                                                       deleteMemoAction: Driver.just(""),
                                                       showActionSheet: showActionSheet,
-                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+                                                      didSaveMemo: Observable.empty()))
         viewModelOutput.updateMemoList
             .skip(1)
             .drive(onNext: { memoList in
                 XCTAssertEqual(memoList.count, 0)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtDeleteAllMemo
             .drive(onNext: { _ in
-                XCTAssertTrue(true)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         scheduler.start()
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 
     func test_updateMemosAtDeleteMemo_メモの個別削除時のイベントを購読できること() {
+        let testExpectation = expectation(description: "メモの個別削除時のイベントを購読できること")
+        testExpectation.expectedFulfillmentCount = 2
+
         let memoRepository = MemoRepositoryMock()
         let dummyUniqueId1 = "1000"
         let dummyUniqueId2 = "2000"
@@ -147,26 +170,31 @@ class MemoListViewModelTest: XCTestCase {
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: deleteMemoAction,
                                                       showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
-                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+                                                      didSaveMemo: Observable.empty()))
 
         viewModelOutput.updateMemoList
             .skip(1)
             .drive(onNext: { memoList in
                 XCTAssertEqual(memoList.count, 1)
                 XCTAssertEqual(memoList.first!.uniqueId, dummyUniqueId2)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtDeleteMemo
             .drive(onNext: { _ in
-                XCTAssertTrue(true)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         scheduler.start()
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 
     func test_transitionCreateMemo_新規作成画面への遷移イベントを購読できること() {
+        let testExpectation = expectation(description: "新規作成画面への遷移イベントを購読できること")
+
         let memoRepository = MemoRepositoryMock()
         memoRepository.dummyMemos.append(contentsOf: [MemoMock(),
                                                       MemoMock(),
@@ -191,21 +219,17 @@ class MemoListViewModelTest: XCTestCase {
                                                       tappedUnderRightButton: tappedUnderRightButton,
                                                       deleteMemoAction: Driver.just(""),
                                                       showActionSheet: showActionSheet,
-                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
-        viewModelOutput.updateMemoList
-            .skip(1)
-            .drive(onNext: { memoList in
-                XCTAssertEqual(memoList.count, 4)
-            })
-            .disposed(by: disposeBag)
-
+                                                      didSaveMemo: Observable.empty()))
         viewModelOutput.transitionCreateMemo
             .drive(onNext: { _ in
                 XCTAssertTrue(true)
+                testExpectation.fulfill()
             })
             .disposed(by: disposeBag)
 
         scheduler.start()
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 
     func test_updateButtonTitle_ボタンタイトルの更新イベントを購読できること() {
@@ -223,7 +247,7 @@ class MemoListViewModelTest: XCTestCase {
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: Driver.just(""),
                                                       showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
-                                                      didSaveMemo: Observable.just(Notification(name: .NSManagedObjectContextDidSave))))
+                                                      didSaveMemo: Observable.empty()))
 
         // 購読結果の蓄積用オブザーバー
         let observer = scheduler.createObserver(String.self)
@@ -320,5 +344,49 @@ class MemoListViewModelTest: XCTestCase {
         // メモリストの中身(uniqueId)の推移を購読した結果：[["0", "1", "2", "3", "4"], [], [], ["2000"]]
         XCTAssertEqual(memosObserver.events.compactMap { $0.value.element?.compactMap { $0.uniqueId } },
                        expectedEvents.compactMap { $0.value.element?.compactMap { $0.uniqueId } })
+    }
+
+    func test_showErrorAlert_メモ一覧の取得処理中にエラーが発生した場合に正常にハンドリングできること_viewWillAppear() {
+        let testExpectation = expectation(description: "メモ一覧の取得処理中にエラーが発生した場合に正常にハンドリングできること_viewWillAppear")
+
+        let memoRepository = MemoRepositoryMock()
+        // 処理に失敗させる
+        memoRepository.isSuccessFunc = false
+        memoRepository.dummyMemos.append(contentsOf: [MemoMock(), MemoMock()])
+
+        let viewWillAppear: Observable<[Any]> = scheduler.createColdObservable([.next(1, [()])]).asObservable()
+        let viewModelOutput = MemoListViewModel()
+            .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: viewWillAppear,
+                                                      tableViewEditing: Driver.just(false),
+                                                      tappedUnderRightButton: Signal.just(()),
+                                                      deleteMemoAction: Driver.just(""),
+                                                      showActionSheet: Driver.just(.init(style: .default, actionType: .cancel)),
+                                                      didSaveMemo: Observable.empty()))
+
+        // 宣言時ではなく、購読時の評価をしたいため、初回をskipする
+        viewModelOutput.updateMemoList
+            .skip(1)
+            .drive(onNext: { memoList in
+                XCTFail("Output処理の途中で失敗しているので、ここまで来ないはず")
+            })
+            .disposed(by: disposeBag)
+
+        viewModelOutput.updateMemosAtWillAppear
+            .drive(onNext: { _ in
+                XCTFail("Output処理の途中で失敗しているので、ここまで来ないはず")
+            })
+            .disposed(by: disposeBag)
+
+        viewModelOutput.showErrorAlert
+            .subscribe(onNext: { message in
+                XCTAssertNotNil(message)
+                testExpectation.fulfill()
+            })
+            .disposed(by: disposeBag)
+
+        scheduler.start()
+
+        wait(for: [testExpectation], timeout: 0.1)
     }
 }
