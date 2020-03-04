@@ -37,6 +37,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
 
         let viewModelOutput =
             viewModel.injection(input: MemoListViewModel.Input(memoRepository: MemoRepositoryImpl(memoDataStore: MemoDataStoreImpl()),
+                                                               viewWillAppear: rx.sentMessage(#selector(viewWillAppear)),
                                                                tableViewEditing: tableViewEditing.asDriver(onErrorDriveWith: Driver.empty()),
                                                                tappedUnderRightButton: underRightButton.rx.tap.asSignal(),
                                                                deleteMemoAction: tableView.rx.modelDeleted(Memo.self).compactMap { $0.uniqueId }.asDriver(onErrorDriveWith: Driver.empty()),
@@ -54,7 +55,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
             })
             .disposed(by: disposeBag)
 
-        viewModelOutput.updateMemosAtStartUp
+        viewModelOutput.updateMemosAtWillAppear
             .drive()
             .disposed(by: disposeBag)
 
@@ -90,7 +91,7 @@ class MemoListViewController: UIViewController, UITableViewDelegate {
         .disposed(by: disposeBag)
 
         viewModelOutput.showErrorAlert
-            .subscribeOn(MainScheduler.asyncInstance)
+            .observeOn(MainScheduler.asyncInstance)
             .share()
             .subscribe(onNext: { [weak self] message in
                 self?.showNormalErrorAlert(message: message)

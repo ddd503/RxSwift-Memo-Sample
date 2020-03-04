@@ -15,6 +15,7 @@ final class MemoListViewModel: ViewModelType {
 
     struct Input {
         let memoRepository: MemoRepository
+        let viewWillAppear: Observable<[Any]>
         let tableViewEditing: Driver<Bool>
         let tappedUnderRightButton: Signal<()>
         let deleteMemoAction: Driver<String>
@@ -25,8 +26,8 @@ final class MemoListViewModel: ViewModelType {
     struct Output {
         /// メモリストが更新された
         let updateMemoList: Driver<[Memo]>
-        /// メモ一覧取得（初回表示時）
-        let updateMemosAtStartUp: Driver<()>
+        /// メモ一覧取得（viewWillAppear時）
+        let updateMemosAtWillAppear: Driver<()>
         /// メモ一覧取得（メモデータ更新後）
         let updateMemosAtCompleteSaveMemo: Driver<()>
         /// メモ一覧取得（全削除後）
@@ -47,16 +48,17 @@ final class MemoListViewModel: ViewModelType {
 
         let showErrorAlert = PublishRelay<String?>()
 
-        // 基本的にはトリガースタートの方が良い(この定義方法だと宣言時から走るため購読時からではない)
-        let updateMemosAtStartUp = input.memoRepository
-            .readAllMemos()
-            .catchError({ (error) -> Observable<[Memo]> in
-                showErrorAlert.accept(error.localizedDescription)
-                return Observable.never()
-            })
-            .flatMap { [weak self] (memos) -> Observable<()> in
-                self?.memos.accept(memos)
-                return Observable.just(())
+        let updateMemosAtWillAppear = input.viewWillAppear
+            .flatMap { (_) -> Observable<()> in
+                return input.memoRepository
+                    .readAllMemos()
+                    .catchError { (error) -> Observable<[Memo]> in
+                        showErrorAlert.accept(error.localizedDescription)
+                        return Observable.never()
+                }
+                .map { [weak self] (memos) in
+                    self?.memos.accept(memos)
+                }
         }
         .asDriver(onErrorDriveWith: Driver.empty())
 
@@ -139,7 +141,7 @@ final class MemoListViewModel: ViewModelType {
         }
         
         return Output(updateMemoList: memos.asDriver(),
-                      updateMemosAtStartUp: updateMemosAtStartUp,
+                      updateMemosAtWillAppear: updateMemosAtWillAppear,
                       updateMemosAtCompleteSaveMemo: updateMemosAtCompleteSaveMemo,
                       updateMemosAtDeleteAllMemo: updateMemosAtDeleteAllMemo,
                       updateMemosAtDeleteMemo: updateMemosAtDeleteMemo,
