@@ -22,11 +22,14 @@ class MemoListViewModelTest: XCTestCase {
         scheduler = TestScheduler(initialClock: 0)
     }
 
-    func test_updateMemosAtStartUp_購読時に保存中のメモを全件取得できること() {
+    func test_updateMemosAtWillAppear_viewWillAppearのタイミングで保存中のメモを全件取得できること() {
         let memoRepository = MemoRepositoryMock()
         memoRepository.dummyMemos.append(contentsOf: [MemoMock(), MemoMock()])
+
+        let viewWillAppear: Observable<[Any]> = scheduler.createColdObservable([.next(1, [()])]).asObservable()
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: viewWillAppear,
                                                       tableViewEditing: Driver.just(false),
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: Driver.just(""),
@@ -41,7 +44,7 @@ class MemoListViewModelTest: XCTestCase {
             })
             .disposed(by: disposeBag)
 
-        viewModelOutput.updateMemosAtStartUp
+        viewModelOutput.updateMemosAtWillAppear
             .drive(onNext: { _ in
                 XCTAssertTrue(true)
             })
@@ -55,6 +58,7 @@ class MemoListViewModelTest: XCTestCase {
         let didSaveMemo = scheduler.createColdObservable([.next(1, Notification(name: .NSManagedObjectContextDidSave))]).asObservable()
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: Observable.empty(),
                                                       tableViewEditing: Driver.just(false),
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: Driver.just(""),
@@ -108,6 +112,7 @@ class MemoListViewModelTest: XCTestCase {
 
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: Observable.empty(),
                                                       tableViewEditing: tableViewEditing,
                                                       tappedUnderRightButton: tappedUnderRightButton,
                                                       deleteMemoAction: Driver.just(""),
@@ -137,6 +142,7 @@ class MemoListViewModelTest: XCTestCase {
         let deleteMemoAction = scheduler.createHotObservable([.next(1, dummyUniqueId1)]).asDriver(onErrorDriveWith: Driver.empty())
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: Observable.empty(),
                                                       tableViewEditing: Driver.just(false),
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: deleteMemoAction,
@@ -180,6 +186,7 @@ class MemoListViewModelTest: XCTestCase {
 
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: Observable.empty(),
                                                       tableViewEditing: tableViewEditing,
                                                       tappedUnderRightButton: tappedUnderRightButton,
                                                       deleteMemoAction: Driver.just(""),
@@ -211,6 +218,7 @@ class MemoListViewModelTest: XCTestCase {
 
         let viewModelOutput = MemoListViewModel()
             .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                      viewWillAppear: Observable.empty(),
                                                       tableViewEditing: tableViewEditing,
                                                       tappedUnderRightButton: Signal.just(()),
                                                       deleteMemoAction: Driver.just(""),
@@ -241,6 +249,8 @@ class MemoListViewModelTest: XCTestCase {
         memoRepository.dummyMemos = (0..<5).map { MemoMock(uniqueId: "\($0)") }
         let dummyUniqueId1 = "1000"
         let dummyUniqueId2 = "2000"
+
+        let viewWillAppear: Observable<[Any]> = scheduler.createColdObservable([.next(0, [()])]).asObservable()
         let tableViewEditing = scheduler.createHotObservable([.next(1, true),
                                                               .next(5, false),
                                                               .next(6, true)])
@@ -251,6 +261,7 @@ class MemoListViewModelTest: XCTestCase {
         let deleteMemoAction = scheduler.createHotObservable([.next(7, dummyUniqueId1)]).asDriver(onErrorDriveWith: Driver.empty())
         let viewModelOutput = MemoListViewModel()
         .injection(input: MemoListViewModel.Input(memoRepository: memoRepository,
+                                                  viewWillAppear: viewWillAppear,
                                                   tableViewEditing: tableViewEditing,
                                                   tappedUnderRightButton: tappedUnderRightButton,
                                                   deleteMemoAction: deleteMemoAction,
@@ -263,10 +274,8 @@ class MemoListViewModelTest: XCTestCase {
                    .drive(memosObserver)
                    .disposed(by: disposeBag)
 
-        viewModelOutput.updateMemosAtStartUp
-            .drive(onNext: {
-                XCTAssertTrue(true)
-            })
+        viewModelOutput.updateMemosAtWillAppear
+            .drive()
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtCompleteSaveMemo
@@ -278,15 +287,11 @@ class MemoListViewModelTest: XCTestCase {
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtDeleteAllMemo
-            .drive(onNext: {
-                XCTAssertTrue(true)
-            })
+            .drive()
             .disposed(by: disposeBag)
 
         viewModelOutput.updateMemosAtDeleteMemo
-            .drive(onNext: {
-                XCTAssertTrue(true)
-            })
+            .drive()
             .disposed(by: disposeBag)
 
         viewModelOutput.transitionCreateMemo
