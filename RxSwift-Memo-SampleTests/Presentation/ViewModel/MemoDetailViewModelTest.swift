@@ -154,4 +154,49 @@ class MemoDetailViewModelTest: XCTestCase {
         XCTAssertEqual(memoRepository.dummyMemos.first!.title, "テスト3")
         XCTAssertEqual(memoRepository.dummyMemos.first!.content, "コンテンツ3")
     }
+
+    func test_saveMemoText_showErrorAlert_書き込まれたメモの保存処理中に発生したエラーをハンドルできること_メモ新規作成時() {
+        let memoRepository = MemoRepositoryMock()
+        memoRepository.isSuccessFunc = false
+        let textViewText = scheduler.createHotObservable([.next(1, "テスト1\nコンテンツ1")]).asDriver(onErrorDriveWith: Driver.empty())
+        let tappedDoneButton = scheduler.createHotObservable([.next(2, ())]).asSignal(onErrorSignalWith: Signal.empty())
+
+        let viewModelOutput = MemoDetailViewModel(memo: nil)
+            .injection(input: MemoDetailViewModel.Input(memoRepository: memoRepository,
+                                                        tappedDoneButton: tappedDoneButton,
+                                                        textViewText: textViewText,
+                                                        didSaveMemo: Observable.never()))
+
+        let setupTextObserver = scheduler.createObserver(String.self)
+        let saveMemoTextObserver = scheduler.createObserver(Void.self)
+        let returnMemoListObserver = scheduler.createObserver(Void.self)
+        let showErrorAlertObserver = scheduler.createObserver(String?.self)
+
+        viewModelOutput.setupText
+            .drive(setupTextObserver)
+            .disposed(by: disposeBag)
+
+        viewModelOutput.saveMemoText
+            .drive(saveMemoTextObserver)
+            .disposed(by: disposeBag)
+
+        viewModelOutput.returnMemoList
+            .drive(returnMemoListObserver)
+            .disposed(by: disposeBag)
+
+        viewModelOutput.showErrorAlert
+            .subscribe(showErrorAlertObserver)
+            .disposed(by: disposeBag)
+
+        scheduler.start()
+
+        // 発生イベントの確認
+        let expectedSetupTextObserver: [Recorded<Event<String>>] =  []
+        XCTAssertEqual(setupTextObserver.events, expectedSetupTextObserver)
+        XCTAssertEqual(saveMemoTextObserver.events.count, 0)
+        XCTAssertEqual(returnMemoListObserver.events.count, 0)
+        XCTAssertEqual(showErrorAlertObserver.events.count, 1)
+        // 保存されているメモ内容確認
+        XCTAssertEqual(memoRepository.dummyMemos.count, 0)
+    }
 }
